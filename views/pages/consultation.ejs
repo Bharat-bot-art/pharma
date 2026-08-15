@@ -1,0 +1,69 @@
+<%
+  const page = 'contact';
+%>
+<%- include('../partials/head', { page, title }) %>
+<div class="page-hero">
+  <div class="container">
+    <h1>Free Health Consultation</h1>
+    <p>Talk to a BIOSYM pharmacist about your health, medicine or wellness concerns.</p>
+  </div>
+</div>
+<div class="container" style="padding:48px 0 64px">
+  <div class="pd-layout" style="grid-template-columns:0.9fr 1.1fr">
+    <div style="display:grid;gap:16px;align-content:start">
+      <div class="info-feature"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg></span><div><strong>Qualified pharmacists</strong><div class="text-sm text-muted">Advice on dosage, side effects and interactions.</div></div></div>
+      <div class="info-feature"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3h4l1.5 5-2.2 1.6a14 14 0 0 0 5 5L16 12.5l5 1.5v4a2 2 0 0 1-2 2A17 17 0 0 1 4 5a2 2 0 0 1 2-2Z"/></svg></span><div><strong>Call us</strong><div class="text-sm text-muted">6266 530 793 · 9am to 9pm</div></div></div>
+      <div class="info-feature"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span><div><strong>Wherever you are</strong><div class="text-sm text-muted">Get a callback anywhere in India.</div></div></div>
+    </div>
+    <div class="card" style="padding:28px">
+      <h2 style="font-size:20px;margin-bottom:4px">Request a consultation</h2>
+      <p class="text-sm text-muted" style="margin-bottom:18px">Our pharmacist will contact you shortly.</p>
+      <div id="error-slot"></div>
+      <form data-consult-form novalidate>
+        <div class="form-grid-2">
+          <div class="field"><label class="label" for="k-name">Full Name</label><input class="input" id="k-name" name="name" value="<%= typeof user !== 'undefined' && user ? user.full_name : '' %>" required></div>
+          <div class="field"><label class="label" for="k-mobile">Mobile Number</label><input class="input" id="k-mobile" name="mobile" value="<%= typeof user !== 'undefined' && user && user.mobile ? user.mobile : '' %>" inputmode="numeric" maxlength="10" required></div>
+        </div>
+        <div class="form-grid-2">
+          <div class="field"><label class="label" for="k-email">Email (optional)</label><input class="input" id="k-email" name="email" type="email" value="<%= typeof user !== 'undefined' && user && user.email ? user.email : '' %>"></div>
+          <div class="field"><label class="label" for="k-subject">Subject</label><input class="input" id="k-subject" name="subject" placeholder="e.g. Medicine dosage"></div>
+        </div>
+        <div class="field"><label class="label" for="k-msg">Your concern</label><textarea class="input" id="k-msg" name="message" rows="5" placeholder="Describe your symptoms or question in a few lines…" required></textarea></div>
+        <button class="btn btn-primary" type="submit" data-consult-btn><span>Request Callback</span></button>
+      </form>
+    </div>
+  </div>
+</div>
+<%- include('../partials/footer') %>
+<script>
+  document.querySelector('[data-consult-form]')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const btn = form.querySelector('[data-consult-btn]');
+    const slot = document.querySelector('#error-slot');
+    if (slot) slot.innerHTML = '';
+    const body = {
+      name: form.name.value.trim(),
+      mobile: form.mobile.value.trim(),
+      email: form.email.value.trim() || undefined,
+      subject: form.subject.value.trim() || undefined,
+      message: form.message.value.trim(),
+    };
+    if (!/^[6-9]\d{9}$/.test(body.mobile.replace(/\D/g, ''))) {
+      return window.BIOSYM.toast.error('Enter a valid 10-digit mobile number.');
+    }
+    window.BIOSYM.loadingBtn(btn, true);
+    const { ok, data } = await window.BIOSYM.api('/api/consultation', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    window.BIOSYM.loadingBtn(btn, false);
+    if (ok) {
+      window.BIOSYM.toast.success('Request submitted. Our pharmacist will contact you shortly.');
+      form.reset();
+    } else {
+      window.BIOSYM.showError(data.message || 'Could not submit your request.', slot);
+    }
+  });
+</script>

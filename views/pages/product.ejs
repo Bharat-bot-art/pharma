@@ -1,0 +1,203 @@
+<%
+  const page = 'shop';
+  const p = product;
+%>
+<%- include('../partials/head', { page, title }) %>
+<div class="container" style="padding-bottom:64px">
+  <div class="crumbs">
+    <a href="/">Home</a><span class="sep">/</span>
+    <a href="/shop">Shop</a><span class="sep">/</span>
+    <a href="/shop?category=<%= p.categorySlug %>"><%= p.category %></a><span class="sep">/</span>
+    <span class="cur"><%= p.name %></span>
+  </div>
+
+  <div class="pd-layout">
+    <!-- Product images -->
+    <div class="pd-media">
+      <div class="pd-main-image-wrap">
+        <div class="pd-main-image">
+          <img src="/img/product/<%= p.imageHue %>.svg" alt="<%= p.name %>" id="pd-main-img">
+        </div>
+        <% if (p.discount > 0) { %>
+          <div class="pd-discount-badge"><%= p.discount %>% OFF</div>
+        <% } %>
+        <% if (p.isPrescription) { %>
+          <div class="pd-rx-badge">Rx</div>
+        <% } %>
+      </div>
+      <!-- Thumbnail strip -->
+      <div class="pd-thumbnails">
+        <div class="pd-thumb active">
+          <img src="/img/product/<%= p.imageHue %>.svg" alt="<%= p.name %>">
+        </div>
+        <div class="pd-thumb">
+          <img src="/img/product/<%= p.imageHue %>.svg" alt="<%= p.name %>" style="opacity:.5">
+        </div>
+        <div class="pd-thumb">
+          <img src="/img/product/<%= p.imageHue %>.svg" alt="<%= p.name %>" style="opacity:.35">
+        </div>
+      </div>
+      <!-- Quality badges -->
+      <div class="pd-quality-row">
+        <div class="pd-quality-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg>
+          <span>100% Genuine<br><small>Quality Assured</small></span>
+        </div>
+        <div class="pd-quality-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 6h13v11H1z"/><path d="M14 9h4l4 4v4h-8"/><circle cx="6" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>
+          <span>Fast Delivery<br><small>On-time Delivery</small></span>
+        </div>
+        <div class="pd-quality-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <span>Secure Payment<br><small>100% Secure</small></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product info -->
+    <div class="pd-info">
+      <div class="pd-info-top">
+        <span class="chip chip-green" style="margin-bottom:10px"><%= p.category %></span>
+        <h1><%= p.name %></h1>
+        <div class="pd-meta">
+          <div class="pd-rating-wrap">
+            <div class="stars">
+              <% const full = Math.round(p.rating); for (let s = 1; s <= 5; s++) { %>
+                <svg class="<%= s <= full ? '' : 'empty' %>" viewBox="0 0 24 24" fill="<%= s <= full ? 'currentColor' : 'none' %>" stroke="currentColor" stroke-width="1.8"><path d="m12 2 2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8L12 2Z"/></svg>
+              <% } %>
+            </div>
+            <span class="rating-num"><%= p.rating %></span>
+            <span class="pd-review-count">(<%= p.ratingCount %> Reviews)</span>
+          </div>
+          <% if (p.isPrescription) { %><span class="chip chip-rx">Prescription Required</span><% } else { %><span class="chip chip-green">OTC Medicine</span><% } %>
+          <% if (p.stock < 15) { %><span class="chip chip-warn">Only <%= p.stock %> left in stock</span><% } else { %><span class="chip chip-green" style="background:var(--success-bg);color:var(--success)">In Stock</span><% } %>
+        </div>
+        <p class="pd-desc"><%= p.description %></p>
+      </div>
+
+      <!-- Price -->
+      <div class="pd-price-box">
+        <div class="pd-price-row">
+          <span class="price">₹<%= p.price.toFixed(2).replace(/\.00$/, '') %></span>
+          <% if (p.mrp > p.price) { %><span class="mrp">MRP ₹<%= p.mrp.toFixed(2).replace(/\.00$/, '') %></span><% } %>
+          <% if (p.discount > 0) { %><span class="discount"><%= p.discount %>% OFF</span><% } %>
+        </div>
+        <p class="text-xs" style="color:var(--ink-400);margin-top:4px">MRP inclusive of all taxes. Prices shown are final.</p>
+      </div>
+
+      <!-- Pack size selector -->
+      <div class="pd-option-group">
+        <div class="pd-option-label">Pack Size</div>
+        <div class="pd-pack-sizes">
+          <button class="pack-size-btn active" type="button">10 Tablets</button>
+          <button class="pack-size-btn" type="button">30 Tablets</button>
+          <button class="pack-size-btn" type="button">60 Tablets</button>
+        </div>
+      </div>
+
+      <!-- Quantity + Actions -->
+      <div class="pd-actions-group">
+        <div class="pd-qty-label">Quantity</div>
+        <div class="pd-actions">
+          <div class="qty-selector">
+            <button type="button" data-qty-minus aria-label="Decrease quantity">−</button>
+            <input type="number" value="1" min="1" max="<%= p.stock %>" data-qty aria-label="Quantity">
+            <button type="button" data-qty-plus aria-label="Increase quantity">+</button>
+          </div>
+          <button class="btn btn-primary btn-lg" data-add-cart="<%= p.id %>" data-name="<%= p.name %>" style="flex:1">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M6 7h12l1 13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1L6 7Z"/><path d="M9 10V6a3 3 0 0 1 6 0v4"/></svg>
+            Add to Cart
+          </button>
+          <button class="btn btn-dark btn-lg" style="flex:1" onclick="document.querySelector('[data-add-cart]').click()">
+            Buy Now
+          </button>
+          <button class="wish-btn <%= typeof wishlistIds !== 'undefined' && wishlistIds.has(p.id) ? 'active' : '' %>" data-wish="<%= p.id %>" aria-label="Toggle wishlist" style="width:52px;height:52px;border-radius:14px;border:1.5px solid var(--ink-200);flex:none">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:22px;height:22px"><path d="M12 20.5C7 16.5 3 13.2 3 9.3 3 6.4 5.3 4 8.2 4c1.6 0 3 .7 3.8 1.9C12.8 4.7 14.2 4 15.8 4 18.7 4 21 6.4 21 9.3c0 3.9-4 7.2-9 11.2z"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Delivery perks -->
+      <div class="pd-perks">
+        <div class="perk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 6h13v11H1z"/><path d="M14 9h4l4 4v4h-8"/><circle cx="6" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg><div><div class="t">Express Delivery</div><div class="s">24–48 hrs across India</div></div></div>
+        <div class="perk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6l-7-3Z"/></svg><div><div class="t">Genuine Product</div><div class="s">Sourced from licensed channels</div></div></div>
+        <div class="perk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><div><div class="t">Easy Returns</div><div class="s">Replace within 7 days</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <% if (related.length > 0) { %>
+    <section class="section" style="padding-bottom:0">
+      <div class="section-head">
+        <div><span class="section-eyebrow">You may also like</span><h2 class="section-title">Related Products</h2></div>
+        <a class="btn btn-outline" href="/shop">View All →</a>
+      </div>
+      <div class="product-grid-4">
+        <% related.forEach((rp, i) => { %><%- include('../partials/product-card', { p: rp, i }) %><% }) %>
+      </div>
+    </section>
+  <% } %>
+
+  <% if (reviews.length > 0) { %>
+    <section class="section" style="padding-bottom:0">
+      <div class="section-head">
+        <div><span class="section-eyebrow">Customer feedback</span><h2 class="section-title">Ratings & Reviews</h2></div>
+      </div>
+      <div style="display:grid;gap:14px">
+        <% reviews.forEach((rv) => { %>
+          <div class="card" style="padding:20px">
+            <div class="row" style="gap:10px;align-items:center;flex-wrap:wrap">
+              <div class="stars">
+                <% for (let s = 1; s <= 5; s++) { %>
+                  <svg class="<%= s <= rv.rating ? '' : 'empty' %>" viewBox="0 0 24 24" fill="<%= s <= rv.rating ? 'currentColor' : 'none' %>" stroke="currentColor" stroke-width="1.8" style="width:15px;height:15px"><path d="m12 2 2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8L12 2Z"/></svg>
+                <% } %>
+                <span class="rating-num"><%= rv.rating %>/5</span>
+              </div>
+              <% if (rv.is_verified) { %><span class="chip chip-green" style="padding:1px 7px;font-size:10px">✓ Verified Purchase</span><% } %>
+            </div>
+            <% if (rv.title) { %><h3 style="font-size:15px;margin:10px 0 4px"><%= rv.title %></h3><% } %>
+            <% if (rv.comment) { %><p class="text-sm" style="margin:0;color:var(--ink-500)"><%= rv.comment %></p><% } %>
+            <div class="text-xs" style="color:var(--ink-400);margin-top:8px"><%= rv.full_name %> · <%= new Date(rv.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %></div>
+          </div>
+        <% }) %>
+      </div>
+    </section>
+  <% } %>
+
+  <% if (faqs.length > 0) { %>
+    <section class="section" style="padding-bottom:0">
+      <div class="section-head">
+        <div><span class="section-eyebrow">Good to know</span><h2 class="section-title">FAQs</h2></div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <% faqs.forEach((f, i) => { %>
+          <details class="faq-item" <%= i === 0 ? 'open' : '' %>>
+            <summary><%= f.question %><span class="faq-caret"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+            <div class="faq-answer"><p><%= f.answer %></p></div>
+          </details>
+        <% }) %>
+      </div>
+    </section>
+  <% } %>
+</div>
+<%- include('../partials/footer') %>
+<script>
+// Pack size selection
+document.querySelectorAll('.pack-size-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.pack-size-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+// Qty
+(function() {
+  const input = document.querySelector('[data-qty]');
+  const max = parseInt(input?.max) || 99;
+  document.querySelector('[data-qty-minus]')?.addEventListener('click', () => {
+    if (input && parseInt(input.value) > 1) input.value = parseInt(input.value) - 1;
+  });
+  document.querySelector('[data-qty-plus]')?.addEventListener('click', () => {
+    if (input && parseInt(input.value) < max) input.value = parseInt(input.value) + 1;
+  });
+})();
+</script>

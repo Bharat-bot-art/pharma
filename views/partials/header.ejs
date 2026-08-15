@@ -1,0 +1,165 @@
+<%
+  const navItems = [
+    { label: 'Home', href: '/', key: 'home', icon: false },
+    { label: 'Medicines', href: '/shop?category=medicines', key: 'medicines', icon: false },
+    { label: 'Health Care', href: '/shop?category=health-care', key: 'health-care', icon: false },
+    { label: 'Personal Care', href: '/shop?category=personal-care', key: 'personal-care', icon: false },
+    { label: 'Nutrition', href: '/shop?category=nutrition', key: 'nutrition', icon: false },
+    { label: 'Cosmetics', href: '/shop?category=cosmetics', key: 'cosmetics', icon: false },
+    { label: 'OTC', href: '/shop?rx=otc', key: 'otc', icon: false },
+    { label: 'Combo Offers', href: '/shop?featured=1', key: 'combo', icon: false },
+    { label: 'About Us', href: '/about', key: 'about', icon: false },
+    { label: 'Contact Us', href: '/contact', key: 'contact', icon: false },
+  ];
+%>
+<% if (settings.show_announcement === 'true') { %>
+<div style="background: var(--brand-gradient, #07875d); color: #fff; text-align: center; padding: 8px 16px; font-size: 13px; font-weight: 500;">
+  <% if (settings.announcement_link) { %><a href="<%= settings.announcement_link %>" style="color: inherit; text-decoration: none;"><% } %>
+    <%= settings.announcement_text || 'Special Offers Available!' %>
+  <% if (settings.announcement_link) { %></a><% } %>
+</div>
+<% } %>
+
+<!-- Announcement bar -->
+<div class="announce-bar">
+  <div class="announce-inner">
+    <span class="announce-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2"/><path d="M12 6v6l4 2"/></svg>
+      Healthy Today, Better Tomorrow
+    </span>
+    <span class="announce-divider">|</span>
+    <span class="announce-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h4l1.5 5-2.2 1.6a14 14 0 0 0 5 5L16 12.5l5 1.5v4a2 2 0 0 1-2 2A17 17 0 0 1 4 5a2 2 0 0 1 2-2Z"/></svg>
+      Customer Care: <strong>6266530793</strong>
+    </span>
+    <span class="announce-divider">|</span>
+    <span class="announce-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="m22 7-10 7L2 7"/></svg>
+      support@biosympharma@gmail.com
+    </span>
+  </div>
+</div>
+
+<!-- Main Header -->
+<header class="site-header" id="site-header">
+  <div class="container">
+    <div class="header-inner">
+      <!-- Logo -->
+      <a href="/" class="brand" aria-label="BIOSYM Pharma home">
+        <img class="brand-logo" src="/favicon.svg" alt="">
+        <span class="brand-text">
+          <span class="brand-name">BIO<span class="accent">SYM</span></span>
+          <span class="brand-tagline">Pharma Private Limited</span>
+        </span>
+      </a>
+
+      <!-- Category + Search -->
+      <div class="search-wrap">
+        <form class="search-box" action="/shop" method="get" role="search">
+          <div class="search-cat-wrap" data-dropdown>
+            <button type="button" class="search-cat-btn" data-dropdown-toggle aria-label="Category">
+              All Categories
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:14px;height:14px"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="dropdown-menu search-cat-menu">
+              <a class="dropdown-link" href="/shop">All Categories</a>
+              <a class="dropdown-link" href="/shop?category=medicines">Medicines</a>
+              <a class="dropdown-link" href="/shop?category=health-care">Health Care</a>
+              <a class="dropdown-link" href="/shop?category=personal-care">Personal Care</a>
+              <a class="dropdown-link" href="/shop?category=nutrition">Nutrition</a>
+              <a class="dropdown-link" href="/shop?category=cosmetics">Cosmetics</a>
+              <a class="dropdown-link" href="/shop?rx=otc">OTC</a>
+            </div>
+          </div>
+          <input type="search" name="q" placeholder="Search for medicines, healthcare products..." value="<%= typeof query !== 'undefined' && query.q ? query.q : '' %>" aria-label="Search products">
+          <button class="btn btn-primary search-submit-btn" type="submit" aria-label="Search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          </button>
+        </form>
+      </div>
+
+      <!-- Actions -->
+      <div class="header-actions">
+        <% if (user) { %>
+          <div class="dropdown" data-dropdown>
+            <button class="hdr-action-btn" data-dropdown-toggle aria-label="My account">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="4"/><path d="M5 21c0-3.9 3.1-7 7-7s7 3.1 7 7"/></svg>
+              <span class="hdr-action-label"><span style="font-size:10px;opacity:.7">Welcome</span><br><%= user.full_name.split(' ')[0] %></span>
+            </button>
+            <div class="dropdown-menu">
+              <div class="dropdown-head">
+                <div class="strong" style="font-size:14px"><%= user.full_name %></div>
+                <div class="text-xs" style="color:var(--ink-400)"><%= user.email || user.mobile %></div>
+              </div>
+              <a class="dropdown-link" href="/account"><%- icon('user') %> My Account</a>
+              <a class="dropdown-link" href="/orders"><%- icon('box') %> My Orders</a>
+              <a class="dropdown-link" href="/wishlist"><%- icon('heart') %> Wishlist</a>
+              <% if (user.role === 'admin') { %><a class="dropdown-link" href="/admin"><%- icon('dashboard') %> Admin Panel</a><% } %>
+              <button class="dropdown-link danger" data-logout style="width:100%;border:0;background:none;text-align:left"><%- icon('logout') %> Sign Out</button>
+            </div>
+          </div>
+        <% } else { %>
+          <a class="hdr-action-btn" href="/login" data-nav="login">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="4"/><path d="M5 21c0-3.9 3.1-7 7-7s7 3.1 7 7"/></svg>
+            <span class="hdr-action-label"><span style="font-size:10px;opacity:.7">Login / Register</span><br>My Account</span>
+          </a>
+        <% } %>
+
+        <a class="hdr-action-btn hide-sm" href="/wishlist" aria-label="Wishlist">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <span class="hdr-action-label"><span style="font-size:10px;opacity:.7">Saved Items</span><br>Wishlist</span>
+          <% if (typeof wishlistIds !== 'undefined' && wishlistIds.size > 0) { %><span class="badge-count"><%= wishlistIds.size %></span><% } %>
+        </a>
+
+        <button class="hdr-action-btn" data-open-cart aria-label="Cart">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span class="hdr-action-label"><span style="font-size:10px;opacity:.7">My Cart</span><br>₹0.00</span>
+          <span class="badge-count" data-cart-count style="<%= (typeof cartCount !== 'undefined' && cartCount > 0) ? '' : 'display:none' %>"><%= cartCount || 0 %></span>
+        </button>
+
+        <button class="icon-btn burger" data-open-mobile aria-label="Open menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Nav -->
+  <nav class="main-nav" aria-label="Primary">
+    <div class="container">
+      <% navItems.forEach((item) => { %>
+        <a class="nav-link <%= page === item.key || (item.href === '/' && page === 'home') ? 'active' : '' %>" href="<%= item.href %>"><%= item.label %></a>
+      <% }) %>
+    </div>
+  </nav>
+</header>
+
+<!-- Mobile nav -->
+<div class="mobile-nav" data-mobile-nav>
+  <div class="sheet">
+    <div class="sheet-head">
+      <a href="/" class="brand"><img class="brand-logo" src="/favicon.svg" alt=""><span class="brand-text"><span class="brand-name">BIO<span class="accent">SYM</span></span></span></a>
+      <button class="icon-btn" data-close-mobile aria-label="Close menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <form class="search-box" action="/shop" method="get">
+      <input type="search" name="q" placeholder="Search…" aria-label="Search">
+      <button class="btn btn-primary" type="submit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></button>
+    </form>
+    <% navItems.forEach((item) => { %>
+      <a class="mobile-link" href="<%= item.href %>"><%= item.label %></a>
+    <% }) %>
+    <div style="border-top:1px solid var(--ink-100);margin:8px 0"></div>
+    <% if (user) { %>
+      <a class="mobile-link" href="/account">My Account</a>
+      <a class="mobile-link" href="/orders">My Orders</a>
+      <a class="mobile-link" href="/wishlist">Wishlist</a>
+      <% if (user.role === 'admin') { %><a class="mobile-link" href="/admin">Admin Panel</a><% } %>
+      <button class="mobile-link" data-logout style="border:0;background:none;color:var(--danger);text-align:left">Sign Out</button>
+    <% } else { %>
+      <a class="btn btn-primary btn-block" href="/login">Sign In</a>
+      <a class="btn btn-outline btn-block" href="/register">Create Account</a>
+    <% } %>
+  </div>
+</div>

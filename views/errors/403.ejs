@@ -1,0 +1,16 @@
+<%
+  const page = '';
+%>
+<%- include('../partials/head', { page, title }) %>
+<div class="container" style="padding:80px 0;text-align:center">
+  <div class="empty-state">
+    <div class="art" style="width:150px;height:150px;background:var(--danger-bg);border-radius:50%;display:grid;place-items:center;color:var(--danger)"><svg viewBox="0 0 24 24" width="56" height="56" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5h.01"/></svg></div>
+    <h1 style="font-size:26px;margin-top:18px"><%= typeof status !== 'undefined' && status === 403 ? 'Access denied' : 'Something went wrong' %></h1>
+    <p class="text-muted"><%= message || 'You do not have permission to view this page.' %></p>
+    <div class="row" style="justify-content:center;margin-top:20px">
+      <a class="btn btn-primary" href="/">Go Home</a>
+      <a class="btn btn-outline" href="/account">My Account</a>
+    </div>
+  </div>
+</div>
+<%- include('../partials/footer') %>

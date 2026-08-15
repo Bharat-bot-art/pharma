@@ -1,0 +1,28 @@
+{
+  "name": "biosym-pharma",
+  "version": "1.0.0",
+  "description": "BIOSYM Pharma Private Limited — premium pharmaceutical e-commerce platform",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning server.js",
+    "dev": "node --disable-warning=ExperimentalWarning server.js",
+    "seed": "node --disable-warning=ExperimentalWarning src/db/seed.js",
+    "seed:admin": "node --disable-warning=ExperimentalWarning src/scripts/seedAdmin.js",
+    "test": "node --disable-warning=ExperimentalWarning src/test/smoke.js"
+  },
+  "engines": {
+    "node": ">=22.5"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.4.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.2.0",
+    "uuid": "^14.0.1",
+    "validator": "^13.12.0"
+  }
+}

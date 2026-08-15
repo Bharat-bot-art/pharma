@@ -1,0 +1,107 @@
+<%
+  const page = 'account';
+  const initials = user.full_name.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase();
+%>
+<%- include('../partials/head', { page, title }) %>
+<div class="container" style="padding:40px 0 64px">
+  <div class="acc-head">
+    <div>
+      <h1 style="font-size:28px;margin-bottom:4px">My Account</h1>
+      <p class="text-muted" style="margin:0">Manage your profile, security and preferences.</p>
+    </div>
+    <button class="btn btn-outline" data-logout>Sign Out</button>
+  </div>
+
+  <div class="account-layout">
+    <%- include('partials/nav', { page }) %>
+
+    <div>
+      <div class="profile-card">
+        <div class="avatar"><%= initials %></div>
+        <div style="flex:1;min-width:0">
+          <h3 style="font-size:19px;margin-bottom:2px"><%= user.full_name %></h3>
+          <div class="text-sm" style="color:var(--ink-500)"><%= user.email || 'No email' %> · <%= user.mobile ? '+91 ' + user.mobile : 'No mobile' %></div>
+          <div class="row" style="margin-top:10px;gap:8px;flex-wrap:wrap">
+            <span class="verified-tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> <%= user.is_email_verified ? 'Email verified' : 'Email unverified' %></span>
+            <span class="verified-tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> <%= user.is_mobile_verified ? 'Mobile verified' : 'Mobile unverified' %></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="padding:26px">
+        <h2 style="font-size:17px;margin-bottom:18px">Profile details</h2>
+        <div id="error-slot"></div>
+        <form data-profile-form novalidate>
+          <div class="field">
+            <label class="label" for="p-name">Full Name</label>
+            <input class="input" id="p-name" name="fullName" value="<%= user.full_name %>" required>
+          </div>
+          <div class="form-grid-2">
+            <div class="field">
+              <label class="label" for="p-dob">Date of Birth</label>
+              <input class="input" id="p-dob" name="dateOfBirth" type="date" value="<%= user.date_of_birth || '' %>" max="<%= new Date().toISOString().split('T')[0] %>">
+            </div>
+            <div class="field">
+              <label class="label" for="p-gender">Gender</label>
+              <select class="input" id="p-gender" name="gender">
+                <option value="">Prefer not to say</option>
+                <option <%= user.gender === 'Male' ? 'selected' : '' %>>Male</option>
+                <option <%= user.gender === 'Female' ? 'selected' : '' %>>Female</option>
+                <option <%= user.gender === 'Other' ? 'selected' : '' %>>Other</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-primary" type="submit" data-save-profile>Save Changes</button>
+        </form>
+      </div>
+
+      <div class="card" style="padding:26px;margin-top:20px">
+        <h2 style="font-size:17px;margin-bottom:4px">Change password</h2>
+        <p class="text-sm text-muted" style="margin-bottom:18px">Use a strong, unique password you don't use elsewhere.</p>
+        <div id="pw-error-slot"></div>
+        <form data-password-form novalidate style="max-width:460px">
+          <div class="field">
+            <label class="label" for="cur-pw">Current Password</label>
+            <div class="input-wrap">
+              <input class="input" id="cur-pw" name="currentPassword" type="password" required>
+              <button type="button" class="toggle-pw" data-toggle-pw aria-label="Show password"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+            </div>
+          </div>
+          <div class="field">
+            <label class="label" for="new-pw">New Password</label>
+            <div class="input-wrap">
+              <input class="input" id="new-pw" name="newPassword" type="password" required data-strength>
+              <button type="button" class="toggle-pw" data-toggle-pw aria-label="Show password"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+            </div>
+          </div>
+          <button class="btn btn-dark" type="submit" data-change-pw>Update Password</button>
+        </form>
+      </div>
+
+      <div class="card" style="padding:26px;margin-top:20px">
+        <h2 style="font-size:17px;margin-bottom:4px">Verification</h2>
+        <p class="text-sm text-muted" style="margin-bottom:18px">Verify your email and mobile to secure your account.</p>
+        <div style="display:grid;gap:12px;max-width:460px">
+          <div class="cd-row" style="align-items:center;background:var(--ink-50);padding:14px;border-radius:var(--r-md);border:1px solid var(--ink-100)">
+            <span class="verified-tag"><%= user.is_email_verified ? 'Verified' : 'Not verified' %></span>
+            <div class="cd-info">
+              <div class="cd-name"><%= user.email || 'No email set' %></div>
+              <div class="text-xs" style="color:var(--ink-400)">Email address</div>
+            </div>
+            <% if (!user.is_email_verified && user.email) { %><button class="btn btn-outline btn-sm" data-verify="email">Verify</button><% } %>
+          </div>
+          <div class="cd-row" style="align-items:center;background:var(--ink-50);padding:14px;border-radius:var(--r-md);border:1px solid var(--ink-100)">
+            <span class="verified-tag"><%= user.is_mobile_verified ? 'Verified' : 'Not verified' %></span>
+            <div class="cd-info">
+              <div class="cd-name"><%= user.mobile ? '+91 ' + user.mobile : 'No mobile set' %></div>
+              <div class="text-xs" style="color:var(--ink-400)">Mobile number</div>
+            </div>
+            <% if (!user.is_mobile_verified && user.mobile) { %><button class="btn btn-outline btn-sm" data-verify="sms">Verify</button><% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('../partials/footer') %>
+<script src="/js/account.js" defer></script>

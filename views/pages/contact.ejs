@@ -1,0 +1,62 @@
+<%
+  const page = 'contact';
+%>
+<%- include('../partials/head', { page, title }) %>
+<div class="page-hero">
+  <div class="container">
+    <h1>Contact Us</h1>
+    <p>Questions about an order, a prescription or a product? We're here to help.</p>
+  </div>
+</div>
+<div class="container" style="padding:56px 0 64px">
+  <div class="pd-layout" style="grid-template-columns:0.9fr 1.1fr">
+    <div style="display:grid;gap:16px;align-content:start">
+      <div class="info-feature"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3h4l1.5 5-2.2 1.6a14 14 0 0 0 5 5L16 12.5l5 1.5v4a2 2 0 0 1-2 2A17 17 0 0 1 4 5a2 2 0 0 1 2-2Z"/></svg></span><div><strong>Call us</strong><div class="text-sm text-muted">1800-123-4567 (toll free, 9am–9pm)</div></div></div>
+      <div class="info-feature"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span><div><strong>Email us</strong><div class="text-sm text-muted">care@biosym.pharma</div></div></div>
+      <div class="info-feature"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span><div><strong>Visit us</strong><div class="text-sm text-muted">BIOSYM Pharma Pvt. Ltd., MG Road, Bengaluru, Karnataka</div></div></div>
+    </div>
+    <div class="card" style="padding:28px">
+      <h2 style="font-size:20px;margin-bottom:4px">Send us a message</h2>
+      <p class="text-sm text-muted" style="margin-bottom:18px">We typically reply within one business day.</p>
+      <div id="error-slot"></div>
+      <form data-contact-form novalidate>
+        <div class="form-grid-2">
+          <div class="field"><label class="label" for="c-name">Full Name</label><input class="input" id="c-name" name="name" required></div>
+          <div class="field"><label class="label" for="c-email">Email</label><input class="input" id="c-email" name="email" type="email" required></div>
+        </div>
+        <div class="field"><label class="label" for="c-subject">Subject</label><input class="input" id="c-subject" name="subject" required></div>
+        <div class="field"><label class="label" for="c-msg">Message</label><textarea class="input" id="c-msg" name="message" rows="5" required></textarea></div>
+        <button class="btn btn-primary" type="submit" data-contact-btn><span>Send Message</span></button>
+      </form>
+    </div>
+  </div>
+</div>
+<%- include('../partials/footer') %>
+<script>
+  document.querySelector('[data-contact-form]')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const btn = form.querySelector('[data-contact-btn]');
+    const slot = document.querySelector('#error-slot');
+    if (slot) slot.innerHTML = '';
+    const body = {
+      name: form.name.value.trim(),
+      email: form.email.value.trim(),
+      subject: form.subject.value.trim(),
+      message: form.message.value.trim(),
+    };
+    window.BIOSYM.loadingBtn(btn, true);
+    const { ok, data } = await window.BIOSYM.api('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    window.BIOSYM.loadingBtn(btn, false);
+    if (ok) {
+      window.BIOSYM.toast.success('Message sent! We\'ll get back to you soon.');
+      form.reset();
+    } else {
+      window.BIOSYM.showError(data.message || 'Could not send your message.', slot);
+    }
+  });
+</script>

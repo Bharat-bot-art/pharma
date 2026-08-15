@@ -1,0 +1,71 @@
+<%
+  const page = 'orders';
+  const statuses = ['placed', 'confirmed', 'packed', 'shipped', 'delivered', 'cancelled'];
+  const idx = statuses.indexOf(order.status);
+%>
+<%- include('../partials/head', { page, title }) %>
+<div class="container" style="padding:40px 0 64px">
+  <div class="crumbs">
+    <a href="/">Home</a><span class="sep">/</span><a href="/orders">My Orders</a><span class="sep">/</span><span class="cur"><%= order.order_number %></span>
+  </div>
+  <div class="acc-head">
+    <div>
+      <h1 style="font-size:24px;margin-bottom:4px">Order <span style="color:var(--green-600)"><%= order.order_number %></span></h1>
+      <p class="text-muted" style="margin:0">Placed on <%= new Date(order.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) %></p>
+    </div>
+    <span class="status <%= order.status %>"><%= order.status %></span>
+  </div>
+
+  <div class="account-layout">
+    <%- include('partials/nav', { page }) %>
+    <div>
+      <div class="card" style="padding:24px">
+        <div class="order-timeline" style="margin:0 0 20px">
+          <% statuses.slice(0, 5).forEach((s, i) => { %>
+            <div class="tl-step <%= i <= idx && order.status !== 'cancelled' ? 'active' : '' %>">
+              <div class="dot"><%= i + 1 %></div>
+              <div class="lbl" style="text-transform:capitalize"><%= s %></div>
+            </div>
+          <% }) %>
+        </div>
+        <div style="border-top:1px solid var(--ink-100);padding-top:18px">
+          <div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:16px">
+            <div>
+              <div class="text-xs" style="color:var(--ink-400);font-weight:700;margin-bottom:4px">DELIVER TO</div>
+              <div style="font-size:13.5px;max-width:260px"><%= order.shipping_name %><br><%= order.shipping_address %><br><%= order.shipping_city %>, <%= order.shipping_state %> — <%= order.shipping_pincode %><br><%= order.shipping_mobile %></div>
+            </div>
+            <div>
+              <div class="text-xs" style="color:var(--ink-400);font-weight:700;margin-bottom:4px">PAYMENT</div>
+              <div class="strong" style="text-transform:capitalize"><%= order.payment_method === 'cod' ? 'Cash on Delivery' : 'Online Payment' %></div>
+              <span class="status <%= order.payment_status %>"><%= order.payment_status %></span>
+            </div>
+            <div>
+              <div class="text-xs" style="color:var(--ink-400);font-weight:700;margin-bottom:4px">SUMMARY</div>
+              <div class="row" style="gap:10px"><span class="text-sm" style="color:var(--ink-500)">Subtotal</span><span>₹<%= order.subtotal.toFixed(2).replace(/\.00$/, '') %></span></div>
+              <div class="row" style="gap:10px"><span class="text-sm" style="color:var(--ink-500)">Delivery</span><span><%= order.shipping === 0 ? 'FREE' : '₹' + order.shipping %></span></div>
+              <div class="row" style="gap:10px"><span class="strong">Total</span><span class="strong" style="font-size:17px">₹<%= order.total.toFixed(2).replace(/\.00$/, '') %></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="padding:24px;margin-top:20px">
+        <h2 style="font-size:16px;margin-bottom:16px">Items (<%= order.items.length %>)</h2>
+        <div style="display:grid;gap:14px">
+          <% order.items.forEach((it) => { %>
+            <div class="cd-row" style="align-items:center;padding-bottom:14px;border-bottom:1px solid var(--ink-100)">
+              <div class="cd-thumb"><img src="/img/product/<%= it.image_hue %>.svg" alt=""></div>
+              <div class="cd-info">
+                <div class="cd-name"><%= it.product_name %></div>
+                <div class="text-xs" style="color:var(--ink-400)">Qty <%= it.qty %> · ₹<%= it.price.toFixed(0) %> each</div>
+              </div>
+              <div class="strong">₹<%= (it.price * it.qty).toFixed(2).replace(/\.00$/, '') %></div>
+            </div>
+          <% }) %>
+        </div>
+        <a class="btn btn-ghost" href="/shop" style="margin-top:16px">Reorder more essentials →</a>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('../partials/footer') %>

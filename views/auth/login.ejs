@@ -1,0 +1,89 @@
+<%
+  const page = 'auth';
+  const title = 'Welcome Back — BIOSYM Pharma';
+%>
+<%- include('../partials/head', { page, title }) %>
+
+<div class="auth-shell">
+  <div class="auth-panel">
+    <div class="auth-card">
+      <div class="auth-head">
+        <img class="auth-mark" src="/favicon.svg" alt="BIOSYM">
+        <h1>Welcome Back</h1>
+        <p>Sign in to your BIOSYM account</p>
+      </div>
+
+      <div class="method-toggle" id="method-toggle" aria-label="Login method">
+        <span class="slider"></span>
+        <button type="button" data-method="password" aria-selected="true">Login with Password</button>
+        <button type="button" data-method="otp" aria-selected="false">Login with OTP</button>
+      </div>
+
+      <div id="error-slot"></div>
+
+      <!-- Password method -->
+      <form data-login-password novalidate>
+        <div class="field">
+          <label class="label" for="login-id">Email or Mobile Number</label>
+          <input class="input" id="login-id" name="identifier" type="text" placeholder="you@example.com or 98765 43210" autocomplete="username" required>
+          <span class="error-text" data-err="identifier">Please enter a valid email or mobile number.</span>
+        </div>
+        <div class="field">
+          <label class="label" for="login-pw">Password <a class="link" href="/forgot-password">Forgot Password?</a></label>
+          <div class="input-wrap">
+            <input class="input" id="login-pw" name="password" type="password" placeholder="Enter your password" autocomplete="current-password" required data-caps-lock>
+            <button type="button" class="toggle-pw" data-toggle-pw aria-label="Show password">
+              <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <div class="caps-warning" data-caps-warning><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 20h20L12 3Z"/><path d="M12 9v5M12 17.5h.01"/></svg> Caps Lock is on</div>
+        </div>
+        <div class="row" style="justify-content:space-between;margin-bottom:18px">
+          <label class="row" style="gap:8px;font-size:13.5px;color:var(--ink-600);cursor:pointer">
+            <input type="checkbox" name="remember" checked style="accent-color:var(--green-600);width:16px;height:16px"> Remember me
+          </label>
+        </div>
+        <button class="btn btn-primary btn-lg btn-block" type="submit" data-login-btn>
+          <span data-login-label>Login</span>
+        </button>
+      </form>
+
+      <!-- OTP method -->
+      <form data-login-otp novalidate hidden>
+        <div class="field">
+          <label class="label" for="otp-id">Email or Mobile Number</label>
+          <div class="input-wrap">
+            <input class="input" id="otp-id" name="identifier" type="text" placeholder="you@example.com or 98765 43210" autocomplete="username" required>
+          </div>
+          <span class="hint">We'll send a 6-digit verification code to this address.</span>
+        </div>
+        <button class="btn btn-primary btn-lg btn-block" type="submit" data-send-otp-btn>
+          <span>Send OTP</span>
+        </button>
+      </form>
+
+      <div class="divider">or</div>
+      <div class="auth-alt">
+        <button class="link" data-switch-method style="border:0;background:none;font-size:13.5px;font-weight:700;color:var(--green-600)">Login with OTP instead</button>
+      </div>
+      <div class="auth-alt" style="margin-top:10px">New to BIOSYM? <a class="link" href="/register?redirect=<%= encodeURIComponent(redirect) %>">Create an account</a></div>
+    </div>
+  </div>
+
+  <div class="auth-side">
+    <svg class="molecule" viewBox="0 0 200 200" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.6">
+      <circle cx="100" cy="40" r="14"/><circle cx="40" cy="130" r="14"/><circle cx="160" cy="130" r="14"/><circle cx="100" cy="170" r="14"/>
+      <line x1="100" y1="54" x2="48" y2="118"/><line x1="100" y1="54" x2="152" y2="118"/><line x1="52" y1="130" x2="92" y2="160"/><line x1="148" y1="130" x2="108" y2="160"/><line x1="100" y1="184" x2="92" y2="160"/><line x1="100" y1="184" x2="108" y2="160"/>
+    </svg>
+    <h2>Trusted healthcare,<br>one sign-in away.</h2>
+    <p>Manage prescriptions, track orders and reorder your essentials in seconds — securely and privately.</p>
+    <div class="features">
+      <div class="feature"><span class="dot"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span> Secure password &amp; OTP sign-in</div>
+      <div class="feature"><span class="dot"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span> Genuine medicines, verified pharmacists</div>
+      <div class="feature"><span class="dot"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span> Fast, trackable doorstep delivery</div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>
+<script src="/js/auth.js" defer></script>

@@ -1,0 +1,195 @@
+<%
+  const page = 'shop';
+  const q = query || {};
+  const priceRanges = [
+    { label: 'Under ₹100', min: 0, max: 100 },
+    { label: '₹100 - ₹500', min: 100, max: 500 },
+    { label: '₹500 - ₹1000', min: 500, max: 1000 },
+    { label: '₹1000 - ₹2000', min: 1000, max: 2000 },
+    { label: 'Above ₹2000', min: 2000, max: 999999 },
+  ];
+%>
+<%- include('../partials/head', { page, title }) %>
+<div class="page-hero">
+  <div class="container">
+    <div class="page-hero-inner">
+      <div>
+        <div class="page-hero-badge">All Products</div>
+        <h1><%= title %></h1>
+        <p>Genuine medicines and healthcare essentials at honest prices.</p>
+      </div>
+      <div class="page-hero-stats">
+        <div class="hero-stat"><span class="hero-stat-num"><%= categoriesCount || products.length %></span><span class="hero-stat-lbl">Total Products</span></div>
+        <div class="hero-stat"><span class="hero-stat-num"><%= categories.length %></span><span class="hero-stat-lbl">Categories</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container" style="padding-bottom:64px">
+  <div class="crumbs" style="margin-bottom: 20px;">
+    <a href="/">Home</a><span class="sep">/</span><span class="cur">Shop</span>
+  </div>
+  
+  <% if (q.category === 'health-care') { %>
+    <div style="margin-bottom: 28px; border-radius: var(--r-xl); overflow: hidden; box-shadow: var(--sh-md);">
+      <% const b1 = settings.banner_healthcare || 'promo1.png'; %>
+      <img src="<%= b1.startsWith('/') ? b1 : '/img/' + b1 %>" alt="Strengthen Your Immunity" style="width: 100%; height: auto; display: block;">
+    </div>
+  <% } else if (q.category === 'nutrition') { %>
+    <div style="margin-bottom: 28px; border-radius: var(--r-xl); overflow: hidden; box-shadow: var(--sh-md);">
+      <% const b2 = settings.banner_nutrition || 'promo2.png'; %>
+      <img src="<%= b2.startsWith('/') ? b2 : '/img/' + b2 %>" alt="Healthy Life, Naturally" style="width: 100%; height: auto; display: block;">
+    </div>
+  <% } else if (q.category === 'personal-care' || q.category === 'cosmetics') { %>
+    <div style="margin-bottom: 28px; border-radius: var(--r-xl); overflow: hidden; box-shadow: var(--sh-md);">
+      <% const b3 = settings.banner_personalcare || 'promo3.png'; %>
+      <img src="<%= b3.startsWith('/') ? b3 : '/img/' + b3 %>" alt="Natural Care for Better Living" style="width: 100%; height: auto; display: block;">
+    </div>
+  <% } else if (q.category === 'medicines' || q.featured) { %>
+    <div style="margin-bottom: 28px; border-radius: var(--r-xl); overflow: hidden; box-shadow: var(--sh-md);">
+      <% const b4 = settings.banner_hero || 'hero-banner.png'; %>
+      <img src="<%= b4.startsWith('/') ? b4 : '/img/' + b4 %>" alt="Better Health, A Brighter Tomorrow" style="width: 100%; height: auto; display: block;">
+    </div>
+  <% } %>
+  <div class="shop-layout">
+    <!-- Sidebar filters -->
+    <aside class="shop-side">
+      <div class="filter-group">
+        <div class="filter-group-head">
+          <h4>Categories</h4>
+        </div>
+        <div class="filter-list">
+          <a class="filter-link <%= !q.category ? 'active' : '' %>" href="/shop?<%= new URLSearchParams({ ...q, category: '', q: q.q || '' }).toString() %>">
+            <span class="filter-link-label">
+              <span class="filter-dot" style="background:var(--green-600)"></span>
+              All Products
+            </span>
+            <span class="n"><%= categoriesCount %></span>
+          </a>
+          <% const catColors = ['#e91e63','#4caf50','#9c27b0','#2196f3','#ff5722','#00bcd4','#ff9800','#795548']; %>
+          <% categories.forEach((c, ci) => { %>
+            <a class="filter-link <%= q.category === c.slug ? 'active' : '' %>" href="/shop?category=<%= c.slug %><%= q.q ? '&q=' + encodeURIComponent(q.q) : '' %>">
+              <span class="filter-link-label">
+                <span class="filter-dot" style="background:<%= catColors[ci % catColors.length] %>"></span>
+                <%= c.name %>
+              </span>
+              <span class="n"><%= c.product_count %></span>
+            </a>
+          <% }) %>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <div class="filter-group-head">
+          <h4>Price Range</h4>
+        </div>
+        <div class="filter-list">
+          <a class="filter-link <%= !q.price_range ? 'active' : '' %>" href="/shop?<%= q.category ? 'category=' + encodeURIComponent(q.category) + '&' : '' %><%= q.q ? 'q=' + encodeURIComponent(q.q) + '&' : '' %>">
+            <span class="filter-link-label"><span class="filter-dot" style="background:#10b981"></span>All Prices</span>
+          </a>
+          <% priceRanges.forEach((pr, pi) => { %>
+            <a class="filter-link <%= q.price_range === String(pi) ? 'active' : '' %>" href="/shop?<%= q.category ? 'category=' + encodeURIComponent(q.category) + '&' : '' %><%= q.q ? 'q=' + encodeURIComponent(q.q) + '&' : '' %>price_range=<%= pi %>">
+              <span class="filter-link-label"><span class="filter-dot" style="background:#64748b"></span><%= pr.label %></span>
+            </a>
+          <% }) %>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <div class="filter-group-head">
+          <h4>Product Type</h4>
+        </div>
+        <div class="filter-list">
+          <a class="filter-link <%= !q.rx ? 'active' : '' %>" href="/shop?<%= q.category ? 'category=' + encodeURIComponent(q.category) + '&' : '' %><%= q.q ? 'q=' + encodeURIComponent(q.q) + '&' : '' %>">
+            <span class="filter-link-label"><span class="filter-dot" style="background:#10b981"></span>All Types</span>
+          </a>
+          <a class="filter-link <%= q.rx === 'otc' ? 'active' : '' %>" href="/shop?<%= q.category ? 'category=' + encodeURIComponent(q.category) + '&' : '' %>rx=otc">
+            <span class="filter-link-label"><span class="filter-dot" style="background:#2196f3"></span>Over the Counter (OTC)</span>
+          </a>
+          <a class="filter-link <%= q.rx === 'rx' ? 'active' : '' %>" href="/shop?<%= q.category ? 'category=' + encodeURIComponent(q.category) + '&' : '' %>rx=rx">
+            <span class="filter-link-label"><span class="filter-dot" style="background:#e91e63"></span>Prescription (Rx)</span>
+          </a>
+        </div>
+      </div>
+
+      <% if (q.category || q.rx || q.price_range) { %>
+        <a href="/shop" class="btn btn-outline btn-block" style="margin-top:4px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          Clear All Filters
+        </a>
+      <% } %>
+    </aside>
+
+    <!-- Product area -->
+    <div class="shop-main">
+      <!-- Active filter pills -->
+      <% if (q.category || q.rx || q.price_range) { %>
+        <div class="active-filters">
+          <span class="active-filters-label">Active Filters:</span>
+          <% if (q.category) { %>
+            <a class="filter-pill" href="/shop?<%= q.q ? 'q=' + encodeURIComponent(q.q) : '' %>">
+              <%= categories.find(c => c.slug === q.category)?.name || q.category %>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </a>
+          <% } %>
+          <% if (q.rx) { %>
+            <a class="filter-pill" href="/shop?<%= q.category ? 'category=' + encodeURIComponent(q.category) + '&' : '' %><%= q.q ? 'q=' + encodeURIComponent(q.q) : '' %>">
+              <%= q.rx === 'otc' ? 'OTC' : 'Prescription (Rx)' %>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </a>
+          <% } %>
+          <% if (q.price_range !== undefined && priceRanges[q.price_range]) { %>
+            <a class="filter-pill" href="/shop?<%= q.category ? 'category=' + encodeURIComponent(q.category) + '&' : '' %><%= q.q ? 'q=' + encodeURIComponent(q.q) : '' %>">
+              <%= priceRanges[q.price_range]?.label %>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </a>
+          <% } %>
+        </div>
+      <% } %>
+
+      <div class="toolbar">
+        <span class="result-count">
+          Showing <strong><%= products.length %></strong> result<%= products.length !== 1 ? 's' : '' %>
+        </span>
+        <div class="row" style="gap:10px">
+          <label class="text-sm" for="sort" style="color:var(--ink-500);font-weight:600;white-space:nowrap">Sort by:</label>
+          <select class="input" id="sort" style="width:auto;padding:9px 36px 9px 14px;font-weight:600" data-sort>
+            <option value="" <%= !q.sort ? 'selected' : '' %>>Popularity</option>
+            <option value="price_asc" <%= q.sort === 'price_asc' ? 'selected' : '' %>>Price: Low to High</option>
+            <option value="price_desc" <%= q.sort === 'price_desc' ? 'selected' : '' %>>Price: High to Low</option>
+            <option value="rating" <%= q.sort === 'rating' ? 'selected' : '' %>>Top Rated</option>
+          </select>
+        </div>
+      </div>
+
+      <% if (products.length === 0) { %>
+        <div class="empty-state card" style="padding:64px 24px">
+          <div class="art" style="width:80px;height:80px;margin:0 auto 20px;background:var(--ink-50);border-radius:50%;display:grid;place-items:center">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" style="color:var(--ink-300);width:40px;height:40px"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          </div>
+          <h3 style="font-size:20px;margin-bottom:8px">No products found</h3>
+          <p class="text-muted">Try a different search term or category.</p>
+          <a class="btn btn-primary" href="/shop" style="margin-top:16px">Clear Filters</a>
+        </div>
+      <% } else { %>
+        <div class="product-grid-4">
+          <% products.forEach((p, i) => { %><%- include('../partials/product-card', { p, i }) %><% }) %>
+        </div>
+        <!-- Pagination placeholder -->
+        <div class="shop-pagination">
+          <span class="pag-info">Showing 1–<%= products.length %> of <%= products.length %> products</span>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>
+<script>
+  document.getElementById('sort')?.addEventListener('change', function () {
+    const url = new URL(location.href);
+    url.searchParams.set('sort', this.value);
+    location.href = url.toString();
+  });
+</script>

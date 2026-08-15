@@ -1,0 +1,24 @@
+<%
+  const page = 'categories';
+%>
+<%- include('../partials/head', { page, title }) %>
+<div class="page-hero">
+  <div class="container">
+    <h1>Shop by Category</h1>
+    <p>Find exactly what you need — from everyday medicines to specialist care.</p>
+  </div>
+</div>
+<div class="container" style="padding:48px 0 64px">
+  <div class="cat-grid">
+    <% categories.forEach((c, i) => { %>
+      <a class="cat-card fade-up" href="/shop?category=<%= c.slug %>" style="animation-delay:<%= i * 0.04 %>s">
+        <img src="/img/category/<%= (60 + i * 38) %>-<%= c.icon || 'pill' %>.svg" alt="<%= c.name %>" loading="lazy">
+        <div class="cat-body">
+          <h3><%= c.name %></h3>
+          <span class="count"><%= c.product_count %> products</span>
+        </div>
+      </a>
+    <% }) %>
+  </div>
+</div>
+<%- include('../partials/footer') %>

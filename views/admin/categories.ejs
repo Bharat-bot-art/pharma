@@ -1,0 +1,53 @@
+<%
+  const page = 'admin';
+  const adminSection = 'categories';
+%>
+<%- include('../partials/head', { page, title }) %>
+<div class="container" style="padding:40px 0 64px">
+  <div class="acc-head">
+    <div>
+      <h1 style="font-size:28px;margin-bottom:4px">Categories</h1>
+      <p class="text-muted" style="margin:0">Organise your catalogue into categories and subcategories.</p>
+    </div>
+    <button class="btn btn-primary" data-open-category-modal>+ Add Category</button>
+  </div>
+  <div class="admin-layout">
+    <%- include('partials/nav', { adminSection }) %>
+    <div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th>Name</th><th>Slug</th><th>Parent</th><th>Color</th><th style="width:120px">Actions</th></tr></thead>
+          <tbody data-categories-body>
+            <tr><td colspan="5"><div class="skeleton" style="height:50px"></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" data-category-modal style="display:none;animation:none;opacity:1">
+  <div class="modal" style="max-width:520px">
+    <div class="row" style="justify-content:space-between;margin-bottom:20px">
+      <h2 style="margin:0;font-size:19px" data-category-modal-title>Add Category</h2>
+      <button class="icon-btn" data-close-category-modal><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div id="cat-error-slot"></div>
+    <form data-category-form novalidate>
+      <input type="hidden" name="id">
+      <div class="field"><label class="label">Name</label><input class="input" name="name" required></div>
+      <div class="form-grid-2">
+        <div class="field"><label class="label">Parent Category</label><select class="input" name="parentId" data-cat-parent></select></div>
+        <div class="field"><label class="label">Icon</label><input class="input" name="icon" placeholder="pill"></div>
+      </div>
+      <div class="field"><label class="label">Color (hex)</label><input class="input" name="imageColor" type="color" value="#0e7a5f" style="height:44px;padding:6px"></div>
+      <div class="field"><label class="label">Description</label><textarea class="input" name="description" rows="2"></textarea></div>
+      <div class="row" style="justify-content:flex-end;gap:10px">
+        <button class="btn btn-ghost" type="button" data-close-category-modal>Cancel</button>
+        <button class="btn btn-primary" type="submit" data-save-category><span>Save Category</span></button>
+      </div>
+    </form>
+  </div>
+</div>
+<%- include('../partials/footer') %>
+<script src="/js/admin.js" defer></script>

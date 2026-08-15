@@ -1,0 +1,79 @@
+<%
+  const page = 'auth';
+  const title = 'Verify OTP — BIOSYM Pharma';
+  const target = decodeURIComponent(identifier);
+  const purposes = { login: 'sign in', forgot: 'reset your password', verify: 'verify your account' };
+%>
+<%- include('../partials/head', { page, title }) %>
+
+<div class="auth-shell">
+  <div class="auth-panel">
+    <div class="auth-card">
+      <div class="auth-head">
+        <img class="auth-mark" src="/favicon.svg" alt="BIOSYM">
+        <h1>Enter the verification code</h1>
+        <p>OTP sent to <strong data-otp-target><%= channel === 'email' ? target : '+91 ' + target %></strong></p>
+      </div>
+
+      <div id="error-slot"></div>
+
+      <form data-otp-form novalidate>
+        <div class="otp-wrap" data-otp-wrap aria-label="6 digit verification code">
+          <% for (let i = 0; i < 6; i++) { %>
+            <input class="otp-input" type="text" inputmode="numeric" maxlength="1" autocomplete="one-time-code" data-otp-input="<%= i %>" aria-label="Digit <%= i + 1 %>">
+          <% } %>
+        </div>
+        <input type="hidden" name="identifier" value="<%= target %>">
+        <input type="hidden" name="channel" value="<%= channel %>">
+        <input type="hidden" name="purpose" value="<%= purpose %>">
+        <input type="hidden" name="redirect" value="<%= redirect %>">
+
+        <div class="otp-meta">
+          <span class="otp-timer" data-otp-timer>
+            <svg class="clock" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            OTP expires in <strong data-otp-countdown>00:00</strong>
+          </span>
+          <div class="otp-attempts" data-otp-attempts style="margin-top:6px"></div>
+          <div style="margin-top:14px">
+            <span style="font-size:13.5px;color:var(--ink-500)">Didn't receive it? </span>
+            <button type="button" class="resend-btn" data-resend disabled>Resend OTP</button>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-lg btn-block" type="submit" data-verify-btn style="margin-top:22px">
+          <span>Verify OTP</span>
+        </button>
+      </form>
+
+      <div class="auth-alt">
+        <a class="link" href="/<%= purpose === 'login' ? 'login' : 'forgot-password' %>">← Use a different address</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-side">
+    <svg class="molecule" viewBox="0 0 200 200" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.6">
+      <circle cx="100" cy="40" r="14"/><circle cx="40" cy="130" r="14"/><circle cx="160" cy="130" r="14"/><circle cx="100" cy="170" r="14"/>
+      <line x1="100" y1="54" x2="48" y2="118"/><line x1="100" y1="54" x2="152" y2="118"/><line x1="52" y1="130" x2="92" y2="160"/><line x1="148" y1="130" x2="108" y2="160"/><line x1="100" y1="184" x2="92" y2="160"/><line x1="100" y1="184" x2="108" y2="160"/>
+    </svg>
+    <h2>One code.<br>Total security.</h2>
+    <p>We never store your OTP. It's generated securely, expires in minutes and can only be used once.</p>
+    <div class="features">
+      <div class="feature"><span class="dot"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span> Single-use verification code</div>
+      <div class="feature"><span class="dot"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span> Expires in <%= env.otp.defaultExpiryMinutes || 5 %> minutes</div>
+      <div class="feature"><span class="dot"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span> Auto-locked after too many attempts</div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>
+<script>
+  window.OTP_INIT = {
+    identifier: '<%= target %>',
+    channel: '<%= channel %>',
+    purpose: '<%= purpose %>',
+    redirect: '<%= redirect %>',
+    resendAfter: <%- typeof resendAfter !== 'undefined' ? resendAfter : 30 %>
+  };
+</script>
+<script src="/js/otp.js" defer></script>

@@ -1,0 +1,45 @@
+<%
+  const page = 'about';
+%>
+<%- include('../partials/head', { page, title }) %>
+<div class="page-hero">
+  <div class="container">
+    <h1>About BIOSYM Pharma</h1>
+    <p>Genuine medicines, honest pricing and care that reaches your doorstep.</p>
+  </div>
+</div>
+<div class="container" style="padding:56px 0 64px">
+  <div class="pd-layout" style="align-items:center">
+    <div>
+      <span class="section-eyebrow">Who we are</span>
+      <h2 style="font-size:30px;margin:10px 0 16px">BIOSYM Pharma Private Limited</h2>
+      <p class="text-muted">We're a licensed pharmaceutical company building a trusted, modern pharmacy experience for India. Every order is checked by qualified pharmacists, sourced from authorised channels and delivered with the care your health deserves.</p>
+      <p class="text-muted">From daily vitamins to prescription refills, we make it effortless to stay on top of your health — with transparent pricing, secure payments and support that actually helps.</p>
+    </div>
+    <div style="display:grid;gap:16px">
+      <div class="info-feature"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6l-7-3Z"/></svg></span><div><strong>Licensed &amp; certified</strong><div class="text-sm text-muted">Operating under strict pharmacy regulations.</div></div></div>
+      <div class="info-feature"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 6 9 17l-5-5"/></svg></span><div><strong>100% genuine products</strong><div class="text-sm text-muted">Every item sourced from authorised distributors.</div></div></div>
+      <div class="info-feature"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 6h13v11H1z"/><path d="M14 9h4l4 4v4h-8"/><circle cx="6" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg></span><div><strong>Fast doorstep delivery</strong><div class="text-sm text-muted">Within 24–48 hours across India.</div></div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <div><span class="section-eyebrow">Why BIOSYM</span><h2 class="section-title">Health, made simple</h2></div>
+    </div>
+    <div class="grid" style="grid-template-columns:repeat(3,1fr)">
+      <% const feats = [
+        { t: 'Pharmacist-verified orders', s: 'Every prescription order is reviewed by a licensed pharmacist before dispatch.' },
+        { t: 'Transparent pricing', s: 'No hidden charges. MRP, discounts and delivery are always clear before you pay.' },
+        { t: 'Your data stays private', s: 'Health data is sensitive. We encrypt, secure and never sell your information.' },
+      ] %>
+      <% feats.forEach((f) => { %>
+        <div class="info-feature" style="flex-direction:column;gap:12px">
+          <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 6 9 17l-5-5"/></svg></span>
+          <div><strong style="font-size:16px"><%= f.t %></strong><div class="text-sm text-muted" style="margin-top:4px"><%= f.s %></div></div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</div>
+<%- include('../partials/footer') %>

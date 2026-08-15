@@ -1,0 +1,59 @@
+<%
+  const page = 'account';
+  const statuses = ['placed', 'confirmed', 'packed', 'shipped', 'delivered', 'cancelled'];
+  const idx = statuses.indexOf(order.status);
+%>
+<%- include('../partials/head', { page, title }) %>
+<div class="container" style="padding:40px 0 64px">
+  <div class="order-success-hero">
+    <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+    <h1 style="font-size:30px">Thank you! Your order is confirmed.</h1>
+    <p class="text-muted">Order <strong><%= order.order_number %></strong> · Placed on <%= new Date(order.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) %></p>
+  </div>
+
+  <div class="card" style="padding:28px;max-width:860px;margin:0 auto">
+    <div class="order-timeline">
+      <% statuses.slice(0, 5).forEach((s, i) => { %>
+        <div class="tl-step <%= i <= idx && order.status !== 'cancelled' ? 'active' : '' %>">
+          <div class="dot"><%= i + 1 %></div>
+          <div class="lbl" style="text-transform:capitalize"><%= s %></div>
+        </div>
+      <% }) %>
+    </div>
+    <div style="border-top:1px solid var(--ink-100);margin:12px 0"></div>
+    <div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <div>
+        <div class="text-xs" style="color:var(--ink-400);font-weight:700">PAYMENT</div>
+        <div class="strong" style="text-transform:capitalize"><%= order.payment_method === 'cod' ? 'Cash on Delivery' : 'Online Payment' %></div>
+        <span class="status <%= order.payment_status %>"><%= order.payment_status %></span>
+      </div>
+      <div>
+        <div class="text-xs" style="color:var(--ink-400);font-weight:700">TOTAL</div>
+        <div class="strong" style="font-size:22px">₹<%= order.total.toFixed(2).replace(/\.00$/, '') %></div>
+      </div>
+      <div>
+        <div class="text-xs" style="color:var(--ink-400);font-weight:700">DELIVER TO</div>
+        <div style="font-size:13.5px;max-width:220px"><%= order.shipping_name %>, <%= order.shipping_address %>, <%= order.shipping_city %>, <%= order.shipping_state %> — <%= order.shipping_pincode %></div>
+      </div>
+    </div>
+    <div style="border-top:1px solid var(--ink-100);margin:18px 0"></div>
+    <h3 style="font-size:16px;margin-bottom:14px">Items</h3>
+    <div style="display:grid;gap:12px">
+      <% order.items.forEach((it) => { %>
+        <div class="cd-row" style="align-items:center">
+          <div class="cd-thumb"><img src="/img/product/<%= it.image_hue %>.svg" alt=""></div>
+          <div class="cd-info">
+            <div class="cd-name"><%= it.product_name %></div>
+            <div class="text-xs" style="color:var(--ink-400)">Qty <%= it.qty %></div>
+          </div>
+          <div class="strong">₹<%= (it.price * it.qty).toFixed(2).replace(/\.00$/, '') %></div>
+        </div>
+      <% }) %>
+    </div>
+    <div class="row" style="margin-top:24px;flex-wrap:wrap">
+      <a class="btn btn-primary" href="/orders">View My Orders</a>
+      <a class="btn btn-ghost" href="/shop">Continue Shopping</a>
+    </div>
+  </div>
+</div>
+<%- include('../partials/footer') %>

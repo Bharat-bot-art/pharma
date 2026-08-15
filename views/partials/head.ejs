@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title><%= title || 'BIOSYM Pharma' %></title>
+  <meta name="description" content="BIOSYM Pharma Private Limited — India's trusted online pharmacy for genuine medicines, delivered with care.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/design.css">
+  <link rel="stylesheet" href="/css/app.css">
+  <% if (typeof page === 'string' && page === 'auth') { %><link rel="stylesheet" href="/css/auth.css"><% } %>
+  <% if (typeof settings !== 'undefined') { %>
+  <style>
+    :root {
+      <% if (settings.theme_primary_color) { %>
+      --green-500: <%= settings.theme_primary_color %>;
+      --green-600: <%= settings.theme_primary_color %>;
+      --green-700: <%= settings.theme_primary_color %>;
+      --brand-gradient: linear-gradient(135deg, <%= settings.theme_primary_color %> 0%, var(--blue-600) 100%);
+      <% } %>
+      <% if (settings.theme_font_family) { %>
+      --font: <%- settings.theme_font_family %>;
+      --font-display: <%- settings.theme_font_family %>;
+      <% } %>
+      <% if (settings.theme_border_radius) { %>
+      --r-sm: calc(<%= settings.theme_border_radius %> / 2);
+      --r-md: <%= settings.theme_border_radius %>;
+      --r-lg: calc(<%= settings.theme_border_radius %> * 1.5);
+      --r-xl: calc(<%= settings.theme_border_radius %> * 2);
+      <% } %>
+    }
+  </style>
+  <% } %>
+  <script>
+    window.BIOSYM = {
+      razorpayKeyId: '<%= typeof env !== 'undefined' && env.razorpayKeyId ? env.razorpayKeyId : '' %>',
+      baseUrl: '<%= typeof env !== 'undefined' && env.baseUrl ? env.baseUrl : '' %>',
+      user: <%- typeof user !== 'undefined' && user ? JSON.stringify({ id: user.id, fullName: user.full_name, email: user.email, mobile: user.mobile, role: user.role, isEmailVerified: !!user.is_email_verified, isMobileVerified: !!user.is_mobile_verified }) : 'null' %>
+    };
+  </script>
+</head>
+<body>
+<%- include('header') %>
+<%- include('cart-drawer') %>
+<main class="site-main">

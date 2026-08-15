@@ -1,0 +1,88 @@
+<%
+  const page = 'combo';
+  function money(n) { return '₹' + Number(n).toFixed(2).replace(/\.00$/, ''); }
+%>
+<%- include('../partials/head', { page, title }) %>
+<div class="page-hero">
+  <div class="container">
+    <h1>Combo Offers</h1>
+    <p>Bundle your essentials and save more with our curated combo packs.</p>
+  </div>
+</div>
+<div class="container" style="padding:48px 0 64px">
+  <div class="crumbs">
+    <a href="/">Home</a><span class="sep">/</span><span class="cur">Combo Offers</span>
+  </div>
+  <% if (!combos || combos.length === 0) { %>
+    <div class="empty-state card">
+      <div class="art"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" style="color:var(--ink-300);width:64px;height:64px"><path d="M12 3 3 7.5v9L12 21l9-4.5v-9L12 3Z"/><path d="M3 7.5l9 4.5 9-4.5"/><path d="M12 12v9"/></svg></div>
+      <h3 style="font-size:18px">No combo offers yet</h3>
+      <p class="text-muted">Check back soon for exciting bundle deals.</p>
+      <a class="btn btn-primary" href="/shop">Browse Shop</a>
+    </div>
+  <% } else { %>
+    <div style="display:grid;gap:24px">
+      <% combos.forEach((c) => { %>
+        <div class="card" style="overflow:hidden">
+          <div class="co-section" style="border:none;padding:24px">
+            <div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:16px">
+              <div style="flex:1;min-width:220px">
+                <div class="row" style="gap:10px;align-items:center;flex-wrap:wrap">
+                  <h2 style="font-size:20px;margin:0"><%= c.name %></h2>
+                  <span class="chip chip-green"><%= c.discount %>% off</span>
+                </div>
+                <p class="text-sm text-muted" style="margin:6px 0 0"><%= c.description || 'Bundle deal on selected products.' %></p>
+              </div>
+              <div style="text-align:right">
+                <div class="text-sm text-muted">Bundle price</div>
+                <div class="row" style="gap:10px;align-items:baseline;justify-content:flex-end">
+                  <span class="price" style="font-size:22px"><%= money(c.price) %></span>
+                  <span class="mrp"><%= money(c.mrp) %></span>
+                </div>
+                <div class="text-xs" style="color:var(--success);font-weight:600;margin-top:4px">You save <%= money(c.savings) %></div>
+              </div>
+            </div>
+            <div style="display:grid;gap:12px;margin-top:18px">
+              <% c.items.forEach((it) => { %>
+                <div class="cd-row" style="background:var(--ink-50);border:1px solid var(--ink-100);border-radius:var(--r-md);padding:10px">
+                  <a class="cd-thumb" style="width:52px;height:52px" href="/product/<%= it.product.slug %>"><img src="/img/product/<%= it.product.image_hue %>.svg" alt="<%= it.product.name %>"></a>
+                  <div class="cd-info">
+                    <div class="cd-name"><a href="/product/<%= it.product.slug %>"><%= it.product.name %></a></div>
+                    <div class="text-xs" style="color:var(--ink-400)">Qty <%= it.qty %> · <%= money(it.product.price) %> each</div>
+                  </div>
+                  <div class="text-sm"><%= money(it.product.price * it.qty) %></div>
+                </div>
+              <% }) %>
+            </div>
+            <div class="row" style="gap:10px;margin-top:18px;flex-wrap:wrap">
+              <button class="btn btn-primary" data-combo-cart="<%= c.id %>" data-name="<%= c.name %>">
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" style="margin-right:8px"><path d="M6 7h12l1 13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1L6 7Z"/><path d="M9 10V6a3 3 0 0 1 6 0v4"/></svg><span>Add Combo to Cart</span>
+              </button>
+              <a class="btn btn-outline" href="/shop?featured=1">View Similar</a>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</div>
+<%- include('../partials/footer') %>
+<script>
+  document.querySelectorAll('[data-combo-cart]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const cid = btn.dataset.comboCart;
+      const name = btn.dataset.name || 'Combo';
+      const { data } = await window.BIOSYM.api(`/api/combos/${cid}`);
+      if (!data.ok || !data.combo) { window.BIOSYM.toast.error('Could not load this combo.'); return; }
+      let count = 0;
+      for (const it of data.combo.items) {
+        const ok = await window.BIOSYM.cart.addToCart(it.product.id, it.qty, { silent: true });
+        if (ok) count++;
+      }
+      if (count > 0) {
+        window.BIOSYM.toast.success(`${name} added to cart`);
+        window.BIOSYM.cart.openCart && window.BIOSYM.cart.openCart();
+      }
+    });
+  });
+</script>

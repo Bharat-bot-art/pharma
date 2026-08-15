@@ -1,0 +1,345 @@
+<%
+  const page = 'home';
+  const title = 'BIOSYM Pharma — Trusted Online Pharmacy';
+%>
+<%- include('../partials/head', { page, title }) %>
+
+<%
+  let layout = [];
+  try {
+    layout = JSON.parse(settings.home_layout);
+  } catch(e) {
+    layout = ['hero', 'categories', 'promo1', 'bestsellers', 'trust', 'ad1', 'promo2', 'featured', 'ad2', 'promo3', 'toprated', 'newsletter'];
+  }
+%>
+<div style="display: flex; flex-direction: column;">
+
+<div style="order: <%= layout.indexOf('hero') > -1 ? layout.indexOf('hero') : 99 %>; display: <%= settings.show_hero === 'false' ? 'none' : 'block' %>;">
+<!-- Image Hero Banner -->
+<section class="hero-banner-section" style="padding-top: var(--header-h); background: #f8fafc;">
+  <div class="container" style="padding-top: 24px; padding-bottom: 12px;">
+    <a href="/shop" class="hero-banner-link" style="display: block; border-radius: var(--r-xl); overflow: hidden; box-shadow: var(--sh-lg); transition: transform var(--t-base);">
+      <% const heroBanner = settings.banner_hero || 'hero-banner.png'; %>
+      <img src="<%= heroBanner.startsWith('/') ? heroBanner : '/img/' + heroBanner %>" alt="BIOSYM Pharma - Better Health, A Brighter Tomorrow" style="width: 100%; height: auto; display: block; object-fit: cover;">
+    </a>
+  </div>
+</section>
+<style>
+  .hero-banner-link:hover { transform: translateY(-4px); }
+  .promo-banner:hover { transform: translateY(-4px); box-shadow: var(--sh-lg); }
+</style>
+
+
+</div>
+
+<div style="order: <%= layout.indexOf('categories') > -1 ? layout.indexOf('categories') : 99 %>; display: <%= settings.show_categories === 'false' ? 'none' : 'block' %>;">
+<!-- Shop by Category -->
+<section class="section section-categories">
+  <div class="container">
+    <div class="section-head-center">
+      <span class="section-eyebrow"><%= settings.category_eyebrow || 'Our Collections' %></span>
+      <h2 class="section-title"><%= settings.category_title || 'Shop by Category' %></h2>
+    </div>
+    <div class="cat-circle-grid">
+      <%
+  let catIcons = [];
+  try {
+    catIcons = JSON.parse(settings.home_categories || '[]');
+  } catch(e) {
+    catIcons = [];
+  }
+  
+  if (catIcons.length === 0) {
+    catIcons = [
+      { name: 'Medicines', slug: 'medicines', color: '#1565c0', bg: 'linear-gradient(135deg,#bbdefb,#90caf9)', emoji: '💊', sub: 'Prescription & OTC' },
+      { name: 'Health Care', slug: 'health-care', color: '#2e7d32', bg: 'linear-gradient(135deg,#c8e6c9,#a5d6a7)', emoji: '🌿', sub: 'Supplements' },
+      { name: 'Personal Care', slug: 'personal-care', color: '#c2185b', bg: 'linear-gradient(135deg,#f8bbd0,#f48fb1)', emoji: "🧴", sub: 'Skin & Body' },
+      { name: 'Nutrition', slug: 'nutrition', color: '#e65100', bg: 'linear-gradient(135deg,#ffe0b2,#ffcc80)', emoji: "🍎", sub: 'Vitamins & Diet' },
+      { name: 'Cosmetics', slug: 'cosmetics', color: '#6a1b9a', bg: 'linear-gradient(135deg,#e1bee7,#ce93d8)', emoji: "💄", sub: 'Makeup & Beauty' },
+      { name: 'OTC', slug: 'otc', color: '#00695c', bg: 'linear-gradient(135deg,#b2dfdb,#80cbc4)', emoji: "🩹", sub: 'Over the Counter' },
+      { name: 'Combo Offers', slug: 'combos', color: '#c62828', bg: 'linear-gradient(135deg,#ffcdd2,#ef9a9a)', emoji: "🎁", sub: 'Save More' }
+    ];
+  }
+%>
+      <% catIcons.forEach((c) => { %>
+        <a class="cat-circle-card" href="/shop?category=<%= c.slug %>">
+          <div class="cat-circle-img" style="background:<%= c.bg %>">
+            <span class="cat-emoji"><%= c.emoji %></span>
+            <div class="cat-glow" style="background:<%= c.color %>"></div>
+          </div>
+          <div class="cat-circle-body">
+            <h3><%= c.name %></h3>
+            <p class="cat-circle-sub"><%= c.sub %></p>
+            <span class="cat-circle-link">Shop Now →</span>
+          </div>
+        </a>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+
+</div>
+
+<div style="order: <%= layout.indexOf('promo1') > -1 ? layout.indexOf('promo1') : 99 %>; display: <%= settings.show_promo1 === 'false' ? 'none' : 'block' %>;">
+<!-- Promo 1 -->
+<section style="padding: 24px 0;">
+  <div class="container">
+    <a href="<%= settings.promo1_link || '/shop?category=medicines' %>" class="promo-banner" style="display: block; border-radius: var(--r-xl); overflow: hidden; box-shadow: var(--sh-md); transition: transform var(--t-base);">
+      <% const promo1 = settings.banner_healthcare || 'promo1.png'; %>
+      <img src="<%= promo1.startsWith('/') ? promo1 : '/img/' + promo1 %>" alt="Strengthen Your Immunity" style="width: 100%; height: auto; display: block; object-fit: cover;">
+    </a>
+  </div>
+</section>
+
+
+</div>
+
+<div style="order: <%= layout.indexOf('bestsellers') > -1 ? layout.indexOf('bestsellers') : 99 %>; display: <%= settings.show_bestsellers === 'false' ? 'none' : 'block' %>;">
+<!-- Best Sellers -->
+<section class="section section-bestsellers">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="section-eyebrow"><%= settings.bestsellers_eyebrow || 'Most Popular' %></span>
+        <h2 class="section-title"><%= settings.bestsellers_title || 'Best Sellers' %></h2>
+        <p class="section-sub"><%= settings.bestsellers_sub || 'Our top-rated medicines and health essentials customers love.' %></p>
+      </div>
+      <a class="btn btn-outline" href="/shop">View All Products →</a>
+    </div>
+
+    <div class="bs-slider-wrap">
+      <button class="bs-nav bs-prev" aria-label="Previous products">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <div class="bs-track" id="bs-track">
+        <% (typeof featured !== 'undefined' ? featured : []).concat(typeof topRated !== 'undefined' ? topRated : []).slice(0, 10).forEach((p, i) => { %>
+          <%- include('../partials/product-card', { p, i }) %>
+        <% }) %>
+      </div>
+      <button class="bs-nav bs-next" aria-label="Next products">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+
+</div>
+
+<div style="order: <%= layout.indexOf('trust') > -1 ? layout.indexOf('trust') : 99 %>; display: <%= settings.show_trust === 'false' ? 'none' : 'block' %>;">
+<!-- Trust Badges -->
+<section class="section-trust">
+  <div class="container">
+    <div class="trust-grid">
+      <div class="trust-item">
+        <div class="trust-icon" style="background:#e8f5e9">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="2" style="width:28px;height:28px"><path d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg>
+        </div>
+        <div>
+          <div class="trust-title"><%= settings.trust1_title || '100% Genuine Products' %></div>
+          <div class="trust-sub"><%= settings.trust1_text || 'All certified & quality-assured' %></div>
+        </div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon" style="background:#e3f2fd">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#1565c0" stroke-width="2" style="width:28px;height:28px"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+        <div>
+          <div class="trust-title"><%= settings.trust2_title || 'Fast Delivery' %></div>
+          <div class="trust-sub"><%= settings.trust2_text || 'On-time delivery guaranteed' %></div>
+        </div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon" style="background:#fff3e0">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#ef6c00" stroke-width="2" style="width:28px;height:28px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <div>
+          <div class="trust-title"><%= settings.trust3_title || 'Secure Payment' %></div>
+          <div class="trust-sub"><%= settings.trust3_text || '100% Secure' %></div>
+        </div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon" style="background:#fce4ec">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#c2185b" stroke-width="2" style="width:28px;height:28px"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        </div>
+        <div>
+          <div class="trust-title"><%= settings.trust4_title || 'Expert Support' %></div>
+          <div class="trust-sub"><%= settings.trust4_text || 'Talk to our pharmacists' %></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+</div>
+
+<div style="order: <%= layout.indexOf('ad1') > -1 ? layout.indexOf('ad1') : 99 %>; display: <%= settings.show_ad1 === 'false' ? 'none' : 'block' %>;">
+<% if (settings.ad1_image) { %>
+<!-- Custom Advertisement 1 -->
+<section style="padding: 24px 0;">
+  <div class="container">
+    <a href="<%= settings.ad1_link || '#' %>" class="promo-banner" style="display: block; border-radius: var(--r-xl); overflow: hidden; box-shadow: var(--sh-md); transition: transform var(--t-base);">
+      <img src="<%= settings.ad1_image.startsWith('/') ? settings.ad1_image : '/img/' + settings.ad1_image %>" alt="Advertisement" style="width: 100%; height: auto; display: block; object-fit: cover;">
+    </a>
+  </div>
+</section>
+<% } %>
+
+
+</div>
+
+<div style="order: <%= layout.indexOf('promo2') > -1 ? layout.indexOf('promo2') : 99 %>; display: <%= settings.show_promo2 === 'false' ? 'none' : 'block' %>;">
+<!-- Promo 2 -->
+<section style="padding: 24px 0;">
+  <div class="container">
+    <a href="<%= settings.promo2_link || '/shop?category=nutrition' %>" class="promo-banner" style="display: block; border-radius: var(--r-xl); overflow: hidden; box-shadow: var(--sh-md); transition: transform var(--t-base);">
+      <% const promo2 = settings.banner_nutrition || 'promo2.png'; %>
+      <img src="<%= promo2.startsWith('/') ? promo2 : '/img/' + promo2 %>" alt="Healthy Life, Naturally" style="width: 100%; height: auto; display: block; object-fit: cover;">
+    </a>
+  </div>
+</section>
+
+
+</div>
+
+<div style="order: <%= layout.indexOf('featured') > -1 ? layout.indexOf('featured') : 99 %>; display: <%= settings.show_featured === 'false' ? 'none' : 'block' %>;">
+<!-- Featured Products -->
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="section-eyebrow"><%= settings.featured_eyebrow || 'Hand-picked' %></span>
+        <h2 class="section-title"><%= settings.featured_title || 'Featured Products' %></h2>
+        <p class="section-sub"><%= settings.featured_sub || 'Our most trusted and top-rated medicines this month.' %></p>
+      </div>
+      <a class="btn btn-outline" href="/shop">Shop All →</a>
+    </div>
+    <div class="product-grid-4">
+      <% (typeof featured !== 'undefined' ? featured : []).forEach((p, i) => { %><%- include('../partials/product-card', { p, i }) %><% }) %>
+    </div>
+  </div>
+</section>
+
+
+</div>
+
+<div style="order: <%= layout.indexOf('ad2') > -1 ? layout.indexOf('ad2') : 99 %>; display: <%= settings.show_ad2 === 'false' ? 'none' : 'block' %>;">
+<% if (settings.ad2_image) { %>
+<!-- Custom Advertisement 2 -->
+<section style="padding: 24px 0;">
+  <div class="container">
+    <a href="<%= settings.ad2_link || '#' %>" class="promo-banner" style="display: block; border-radius: var(--r-xl); overflow: hidden; box-shadow: var(--sh-md); transition: transform var(--t-base);">
+      <img src="<%= settings.ad2_image.startsWith('/') ? settings.ad2_image : '/img/' + settings.ad2_image %>" alt="Advertisement" style="width: 100%; height: auto; display: block; object-fit: cover;">
+    </a>
+  </div>
+</section>
+<% } %>
+
+
+</div>
+
+<div style="order: <%= layout.indexOf('promo3') > -1 ? layout.indexOf('promo3') : 99 %>; display: <%= settings.show_promo3 === 'false' ? 'none' : 'block' %>;">
+<!-- Promo 3 -->
+<section style="padding: 24px 0 48px;">
+  <div class="container">
+    <a href="<%= settings.promo3_link || '/shop?category=personal-care' %>" class="promo-banner" style="display: block; border-radius: var(--r-xl); overflow: hidden; box-shadow: var(--sh-md); transition: transform var(--t-base);">
+      <% const promo3 = settings.banner_personalcare || 'promo3.png'; %>
+      <img src="<%= promo3.startsWith('/') ? promo3 : '/img/' + promo3 %>" alt="Natural Care for Better Living" style="width: 100%; height: auto; display: block; object-fit: cover;">
+    </a>
+  </div>
+</section>
+
+
+</div>
+
+<div style="order: <%= layout.indexOf('toprated') > -1 ? layout.indexOf('toprated') : 99 %>; display: <%= settings.show_toprated === 'false' ? 'none' : 'block' %>;">
+<!-- Top Rated -->
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="section-eyebrow"><%= settings.toprated_eyebrow || 'Most loved' %></span>
+        <h2 class="section-title"><%= settings.toprated_title || 'Top Rated' %></h2>
+        <p class="section-sub"><%= settings.toprated_sub || 'Bestselling healthcare essentials our customers keep coming back for.' %></p>
+      </div>
+      <a class="btn btn-outline" href="/shop">View More →</a>
+    </div>
+    <div class="product-grid-4">
+      <% (typeof topRated !== 'undefined' ? topRated : []).forEach((p, i) => { %><%- include('../partials/product-card', { p, i }) %><% }) %>
+    </div>
+    <div style="text-align:center;margin-top:32px">
+      <a class="btn btn-outline btn-lg" href="/shop">View All Products →</a>
+    </div>
+  </div>
+</section>
+
+
+</div>
+
+<div style="order: <%= layout.indexOf('newsletter') > -1 ? layout.indexOf('newsletter') : 99 %>; display: <%= settings.show_newsletter === 'false' ? 'none' : 'block' %>;">
+<!-- Newsletter CTA -->
+<section class="section-newsletter">
+  <div class="container">
+    <div class="newsletter-card">
+      <div class="newsletter-content">
+        <h2><%= settings.newsletter_title || 'Stay Updated with BIOSYM Pharma' %></h2>
+        <p><%= settings.newsletter_sub || 'Subscribe to get the latest offers, health tips and product updates.' %></p>
+        <form class="newsletter-form" data-newsletter>
+          <input class="input" type="email" placeholder="Enter your email address" required aria-label="Email for newsletter">
+          <button class="btn btn-primary btn-lg" type="submit">Subscribe</button>
+        </form>
+      </div>
+      <div class="newsletter-art">
+        <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:120px;height:120px;opacity:0.15">
+          <circle cx="60" cy="60" r="55" stroke="white" stroke-width="2"/>
+          <path d="M40 60h40M60 40v40" stroke="white" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+</div>
+
+</div>
+
+<%- include('../partials/footer') %>
+
+<script>
+// Hero slider
+(function () {
+  const slides = document.querySelectorAll('.hero-slide');
+  const dots = document.querySelectorAll('.slider-dot');
+  let cur = 0, timer;
+
+  function goTo(n) {
+    slides[cur].classList.remove('active');
+    dots[cur].classList.remove('active');
+    cur = (n + slides.length) % slides.length;
+    slides[cur].classList.add('active');
+    dots[cur].classList.add('active');
+  }
+
+  function startAuto() { timer = setInterval(() => goTo(cur + 1), 5000); }
+  function stopAuto() { clearInterval(timer); }
+
+  document.querySelector('.slider-next')?.addEventListener('click', () => { stopAuto(); goTo(cur + 1); startAuto(); });
+  document.querySelector('.slider-prev')?.addEventListener('click', () => { stopAuto(); goTo(cur - 1); startAuto(); });
+  dots.forEach((d, i) => d.addEventListener('click', () => { stopAuto(); goTo(i); startAuto(); }));
+  startAuto();
+})();
+
+// Bestseller slider scroll
+(function () {
+  const track = document.getElementById('bs-track');
+  const prev = document.querySelector('.bs-prev');
+  const next = document.querySelector('.bs-next');
+  if (!track) return;
+  const scroll = () => track.querySelector('.product-card')?.offsetWidth + 20 || 240;
+  prev?.addEventListener('click', () => track.scrollBy({ left: -scroll() * 2, behavior: 'smooth' }));
+  next?.addEventListener('click', () => track.scrollBy({ left: scroll() * 2, behavior: 'smooth' }));
+})();
+</script>

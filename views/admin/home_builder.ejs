@@ -1,0 +1,299 @@
+<%
+  const page = 'admin';
+  const adminSection = 'home_builder';
+%>
+<%- include('../partials/head', { page, title }) %>
+<div class="container" style="padding:40px 0 64px">
+  <div class="acc-head">
+    <div>
+      <h1 style="font-size:28px;margin-bottom:4px">Home Page Builder</h1>
+      <p class="text-muted" style="margin:0">Manage the layout, sections, banners and content of the storefront home page.</p>
+    </div>
+  </div>
+  <div class="admin-layout">
+    <%- include('partials/nav', { adminSection }) %>
+    <div>
+      <div class="co-section" style="max-width: 600px;">
+        <h2><span class="step-num"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg></span> Banner Placements</h2>
+        <p class="text-muted" style="font-size: 14px; margin-bottom: 24px;">Enter the filename of the image located in the public/img folder (e.g. <code>promo1.png</code>).</p>
+        
+        <form id="appearance-form">
+          <hr style="margin: 40px 0; border: none; border-top: 1px solid var(--ink-200);">
+          <h2><span class="step-num"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg></span> Section Layout</h2>
+          <p class="text-muted" style="font-size: 14px; margin-bottom: 24px;">Drag and drop to reorder the sections on the home page, or uncheck to hide them.</p>
+          
+          <input type="hidden" name="home_layout" id="home_layout_input">
+          
+          <div id="layout-builder" style="background: #fff; border: 1px solid var(--ink-200); border-radius: 8px; padding: 16px;">
+            <% 
+              let l = [];
+              try { l = JSON.parse(settings.home_layout); } 
+              catch(e) { l = ['hero', 'categories', 'promo1', 'bestsellers', 'trust', 'ad1', 'promo2', 'featured', 'ad2', 'promo3', 'toprated', 'newsletter']; }
+              
+              const sectionNames = {
+                'hero': 'Hero Banner Image',
+                'categories': 'Category Circles',
+                'promo1': 'Promo Banner 1',
+                'bestsellers': 'Best Sellers Slider',
+                'trust': 'Trust Badges',
+                'ad1': 'Custom Advertisement 1',
+                'promo2': 'Promo Banner 2',
+                'featured': 'Featured Products Grid',
+                'ad2': 'Custom Advertisement 2',
+                'promo3': 'Promo Banner 3',
+                'toprated': 'Top Rated Products Grid',
+                'newsletter': 'Newsletter Subscribe'
+              };
+              
+              const allSections = Object.keys(sectionNames);
+              const missingSections = allSections.filter(s => !l.includes(s));
+              const fullLayout = [...l, ...missingSections];
+            %>
+            
+            <% fullLayout.forEach((sec) => { %>
+              <div class="layout-item" data-id="<%= sec %>" style="display: flex; align-items: center; padding: 12px; border: 1px solid var(--ink-100); margin-bottom: 8px; border-radius: 6px; background: #fafafa; cursor: grab;">
+                <svg style="margin-right: 12px; color: var(--ink-300);" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8h16M4 16h16"/></svg>
+                <div style="flex-grow: 1; font-weight: 500;"><%= sectionNames[sec] %></div>
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+                  Show
+                  <input type="checkbox" name="show_<%= sec %>" value="true" <%= settings['show_'+sec] !== 'false' ? 'checked' : '' %>>
+                </label>
+              </div>
+            <% }) %>
+          </div>
+          
+          <script>
+            // Simple drag and drop using SortableJS if available, otherwise manual
+            // Let's just do a basic manual up/down for now or rely on native drag and drop
+            const container = document.getElementById('layout-builder');
+            let draggingItem = null;
+            
+            container.querySelectorAll('.layout-item').forEach(item => {
+              item.draggable = true;
+              item.addEventListener('dragstart', (e) => {
+                draggingItem = item;
+                setTimeout(() => item.style.opacity = '0.5', 0);
+              });
+              item.addEventListener('dragend', () => {
+                setTimeout(() => {
+                  draggingItem.style.opacity = '1';
+                  draggingItem = null;
+                  updateLayoutInput();
+                }, 0);
+              });
+              item.addEventListener('dragover', (e) => e.preventDefault());
+              item.addEventListener('dragenter', function(e) {
+                e.preventDefault();
+                if (this !== draggingItem) {
+                  const allItems = [...container.querySelectorAll('.layout-item')];
+                  const currentPos = allItems.indexOf(draggingItem);
+                  const hoveredPos = allItems.indexOf(this);
+                  if (currentPos < hoveredPos) {
+                    this.after(draggingItem);
+                  } else {
+                    this.before(draggingItem);
+                  }
+                }
+              });
+            });
+            
+            function updateLayoutInput() {
+              const layout = [...container.querySelectorAll('.layout-item')].map(el => el.getAttribute('data-id'));
+              document.getElementById('home_layout_input').value = JSON.stringify(layout);
+            }
+            updateLayoutInput(); // Initial
+            
+            // Add a submit handler intercept to ensure unchecked checkboxes submit as "false"
+            document.getElementById('appearance-form').addEventListener('submit', (e) => {
+              container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                if (!cb.checked) {
+                  const hidden = document.createElement('input');
+                  hidden.type = 'hidden';
+                  hidden.name = cb.name;
+                  hidden.value = 'false';
+                  e.target.appendChild(hidden);
+                }
+              });
+            });
+          </script>
+
+          <div class="field">
+            <label class="label">Homepage Hero Banner</label>
+            <% if (settings.banner_hero) { %><div style="margin-bottom:8px"><img src="<%= settings.banner_hero.startsWith('/') ? settings.banner_hero : '/img/' + settings.banner_hero %>" style="height:40px;border-radius:4px"></div><% } %>
+            <input class="input" type="file" name="banner_hero" accept="image/*">
+          </div>
+          
+          <div class="field" style="margin-top: 24px;">
+            <label class="label">Promo Banner 1 (Upload Image)</label>
+            <% if (settings.banner_healthcare) { %><div style="margin-bottom:8px"><img src="<%= settings.banner_healthcare.startsWith('/') ? settings.banner_healthcare : '/img/' + settings.banner_healthcare %>" style="height:40px;border-radius:4px"></div><% } %>
+            <input class="input" type="file" name="banner_healthcare" accept="image/*">
+          </div>
+          <div class="field" style="margin-top: 8px;">
+            <label class="label">Promo Banner 1 (Link URL)</label>
+            <input class="input" type="text" name="promo1_link" value="<%= settings.promo1_link || '/shop?category=medicines' %>">
+          </div>
+          
+          <div class="field" style="margin-top: 24px;">
+            <label class="label">Promo Banner 2 (Upload Image)</label>
+            <% if (settings.banner_nutrition) { %><div style="margin-bottom:8px"><img src="<%= settings.banner_nutrition.startsWith('/') ? settings.banner_nutrition : '/img/' + settings.banner_nutrition %>" style="height:40px;border-radius:4px"></div><% } %>
+            <input class="input" type="file" name="banner_nutrition" accept="image/*">
+          </div>
+          <div class="field" style="margin-top: 8px;">
+            <label class="label">Promo Banner 2 (Link URL)</label>
+            <input class="input" type="text" name="promo2_link" value="<%= settings.promo2_link || '/shop?category=nutrition' %>">
+          </div>
+          
+          <div class="field" style="margin-top: 24px;">
+            <label class="label">Promo Banner 3 (Upload Image)</label>
+            <% if (settings.banner_personalcare) { %><div style="margin-bottom:8px"><img src="<%= settings.banner_personalcare.startsWith('/') ? settings.banner_personalcare : '/img/' + settings.banner_personalcare %>" style="height:40px;border-radius:4px"></div><% } %>
+            <input class="input" type="file" name="banner_personalcare" accept="image/*">
+          </div>
+          <div class="field" style="margin-top: 8px;">
+            <label class="label">Promo Banner 3 (Link URL)</label>
+            <input class="input" type="text" name="promo3_link" value="<%= settings.promo3_link || '/shop?category=personal-care' %>">
+          </div>
+          
+          <hr style="margin: 40px 0; border: none; border-top: 1px solid var(--ink-200);">
+          <h2><span class="step-num"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg></span> Homepage Content</h2>
+          <p class="text-muted" style="font-size: 14px; margin-bottom: 24px;">Customize the titles and subtitles of the product sections on the homepage.</p>
+
+          <h3 style="font-size: 15px; margin-bottom: 16px;">Category Section</h3>
+          <div class="form-grid-2">
+            <div class="field"><label class="label">Eyebrow (Small Top Text)</label><input class="input" name="category_eyebrow" value="<%= settings.category_eyebrow || 'Our Collections' %>"></div>
+            <div class="field"><label class="label">Main Title</label><input class="input" name="category_title" value="<%= settings.category_title || 'Shop by Category' %>"></div>
+          </div>
+
+          <h3 style="font-size: 15px; margin-bottom: 16px; margin-top: 32px;">Best Sellers Section</h3>
+          <div class="form-grid-2">
+            <div class="field"><label class="label">Eyebrow (Small Top Text)</label><input class="input" name="bestsellers_eyebrow" value="<%= settings.bestsellers_eyebrow || 'Most Popular' %>"></div>
+            <div class="field"><label class="label">Main Title</label><input class="input" name="bestsellers_title" value="<%= settings.bestsellers_title || 'Best Sellers' %>"></div>
+            <div class="field" style="grid-column: span 2;"><label class="label">Subtitle</label><input class="input" name="bestsellers_sub" value="<%= settings.bestsellers_sub || 'Our top-rated medicines and health essentials customers love.' %>"></div>
+          </div>
+
+          <h3 style="font-size: 15px; margin-bottom: 16px; margin-top: 32px;">Featured Products Section</h3>
+          <div class="form-grid-2">
+            <div class="field"><label class="label">Eyebrow</label><input class="input" name="featured_eyebrow" value="<%= settings.featured_eyebrow || 'Hand-picked' %>"></div>
+            <div class="field"><label class="label">Main Title</label><input class="input" name="featured_title" value="<%= settings.featured_title || 'Featured Products' %>"></div>
+            <div class="field" style="grid-column: span 2;"><label class="label">Subtitle</label><input class="input" name="featured_sub" value="<%= settings.featured_sub || 'Our most trusted and top-rated medicines this month.' %>"></div>
+          </div>
+
+          <h3 style="font-size: 15px; margin-bottom: 16px; margin-top: 32px;">Top Rated Section</h3>
+          <div class="form-grid-2">
+            <div class="field"><label class="label">Eyebrow</label><input class="input" name="toprated_eyebrow" value="<%= settings.toprated_eyebrow || 'Most loved' %>"></div>
+            <div class="field"><label class="label">Main Title</label><input class="input" name="toprated_title" value="<%= settings.toprated_title || 'Top Rated' %>"></div>
+            <div class="field" style="grid-column: span 2;"><label class="label">Subtitle</label><input class="input" name="toprated_sub" value="<%= settings.toprated_sub || 'Bestselling healthcare essentials our customers keep coming back for.' %>"></div>
+          </div>
+
+          <h3 style="font-size: 15px; margin-bottom: 16px; margin-top: 32px;">Newsletter CTA Section</h3>
+          <div class="form-grid-2">
+            <div class="field"><label class="label">Title</label><input class="input" name="newsletter_title" value="<%= settings.newsletter_title || 'Stay Updated with BIOSYM Pharma' %>"></div>
+            <div class="field"><label class="label">Subtitle</label><input class="input" name="newsletter_sub" value="<%= settings.newsletter_sub || 'Subscribe to get the latest offers, health tips and product updates.' %>"></div>
+          </div>
+          
+          <hr style="margin: 40px 0; border: none; border-top: 1px solid var(--ink-200);">
+          <h2><span class="step-num"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></span> Category Circles</h2>
+          <p class="text-muted" style="font-size: 14px; margin-bottom: 24px;">Edit the JSON configuration for the circular category links on the homepage.</p>
+          <div class="field">
+            <textarea class="input" name="home_categories" rows="12" style="font-family: monospace; font-size: 13px;"><%= settings.home_categories || '[\n  { "name": "Medicines", "slug": "medicines", "color": "#1565c0", "bg": "linear-gradient(135deg,#bbdefb,#90caf9)", "emoji": "💊", "sub": "Prescription & OTC" },\n  { "name": "Health Care", "slug": "health-care", "color": "#2e7d32", "bg": "linear-gradient(135deg,#c8e6c9,#a5d6a7)", "emoji": "🌿", "sub": "Supplements" },\n  { "name": "Personal Care", "slug": "personal-care", "color": "#c2185b", "bg": "linear-gradient(135deg,#f8bbd0,#f48fb1)", "emoji": "🧴", "sub": "Skin & Body" },\n  { "name": "Nutrition", "slug": "nutrition", "color": "#e65100", "bg": "linear-gradient(135deg,#ffe0b2,#ffcc80)", "emoji": "🍎", "sub": "Vitamins & Diet" },\n  { "name": "Cosmetics", "slug": "cosmetics", "color": "#6a1b9a", "bg": "linear-gradient(135deg,#e1bee7,#ce93d8)", "emoji": "💄", "sub": "Makeup & Beauty" },\n  { "name": "OTC", "slug": "otc", "color": "#00695c", "bg": "linear-gradient(135deg,#b2dfdb,#80cbc4)", "emoji": "🩹", "sub": "Over the Counter" },\n  { "name": "Combo Offers", "slug": "combos", "color": "#c62828", "bg": "linear-gradient(135deg,#ffcdd2,#ef9a9a)", "emoji": "🎁", "sub": "Save More" }\n]' %></textarea>
+          </div>
+
+          <hr style="margin: 40px 0; border: none; border-top: 1px solid var(--ink-200);">
+          <h2><span class="step-num"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span> Trust Badges</h2>
+          <div class="form-grid-2" style="margin-top: 24px;">
+            <div class="field"><label class="label">Badge 1 Title</label><input class="input" name="trust1_title" value="<%= settings.trust1_title || '100% Genuine' %>"></div>
+            <div class="field"><label class="label">Badge 1 Text</label><input class="input" name="trust1_text" value="<%= settings.trust1_text || 'Authentic medicines directly from manufacturers.' %>"></div>
+            
+            <div class="field" style="margin-top: 16px;"><label class="label">Badge 2 Title</label><input class="input" name="trust2_title" value="<%= settings.trust2_title || 'Fast Delivery' %>"></div>
+            <div class="field" style="margin-top: 16px;"><label class="label">Badge 2 Text</label><input class="input" name="trust2_text" value="<%= settings.trust2_text || 'Quick and safe delivery to your doorstep.' %>"></div>
+            
+            <div class="field" style="margin-top: 16px;"><label class="label">Badge 3 Title</label><input class="input" name="trust3_title" value="<%= settings.trust3_title || 'Secure Payments' %>"></div>
+            <div class="field" style="margin-top: 16px;"><label class="label">Badge 3 Text</label><input class="input" name="trust3_text" value="<%= settings.trust3_text || 'Multiple safe payment options available.' %>"></div>
+            
+            <div class="field" style="margin-top: 16px;"><label class="label">Badge 4 Title</label><input class="input" name="trust4_title" value="<%= settings.trust4_title || '24/7 Support' %>"></div>
+            <div class="field" style="margin-top: 16px;"><label class="label">Badge 4 Text</label><input class="input" name="trust4_text" value="<%= settings.trust4_text || 'Our healthcare team is always here to help.' %>"></div>
+          </div>
+
+          <hr style="margin: 40px 0; border: none; border-top: 1px solid var(--ink-200);">
+          <h2><span class="step-num"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg></span> Advertisement Slots</h2>
+          <p class="text-muted" style="font-size: 14px; margin-bottom: 24px;">Additional advertisement banners to display on the homepage.</p>
+          
+          <div class="field">
+            <label class="label">Advertisement Banner 1 (Upload Image)</label>
+            <% if (settings.ad1_image) { %><div style="margin-bottom:8px"><img src="<%= settings.ad1_image.startsWith('/') ? settings.ad1_image : '/img/' + settings.ad1_image %>" style="height:40px;border-radius:4px"></div><% } %>
+            <input class="input" type="file" name="ad1_image" accept="image/*">
+          </div>
+          <div class="field" style="margin-top: 12px;">
+            <label class="label">Advertisement Banner 1 (Link URL)</label>
+            <input class="input" type="text" name="ad1_link" value="<%= settings.ad1_link || '/shop' %>" placeholder="/shop?category=medicines">
+          </div>
+          
+          <div class="field" style="margin-top: 24px;">
+            <label class="label">Advertisement Banner 2 (Upload Image)</label>
+            <% if (settings.ad2_image) { %><div style="margin-bottom:8px"><img src="<%= settings.ad2_image.startsWith('/') ? settings.ad2_image : '/img/' + settings.ad2_image %>" style="height:40px;border-radius:4px"></div><% } %>
+            <input class="input" type="file" name="ad2_image" accept="image/*">
+          </div>
+          <div class="field" style="margin-top: 12px;">
+            <label class="label">Advertisement Banner 2 (Link URL)</label>
+            <input class="input" type="text" name="ad2_link" value="<%= settings.ad2_link || '/shop' %>" placeholder="/shop?category=nutrition">
+          </div>
+          
+          
+          
+          <hr style="margin: 40px 0; border: none; border-top: 1px solid var(--ink-200);">
+          <h2><span class="step-num"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span> Announcement Bar</h2>
+          <div class="field" style="margin-top: 24px;">
+            <label class="label">Show Announcement Bar</label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" name="show_announcement" value="true" <%= settings.show_announcement === 'true' ? 'checked' : '' %>>
+              Enable the top announcement bar
+            </label>
+          </div>
+          <div class="field" style="margin-top: 16px;">
+            <label class="label">Announcement Text</label>
+            <input class="input" name="announcement_text" value="<%= settings.announcement_text || 'Free shipping on orders over ₹500!' %>">
+          </div>
+          <div class="field" style="margin-top: 16px;">
+            <label class="label">Announcement Link (Optional)</label>
+            <input class="input" name="announcement_link" value="<%= settings.announcement_link || '/shop' %>">
+          </div>
+
+<div class="row" style="margin-top: 40px; justify-content: flex-end;">
+            <button class="btn btn-primary btn-lg" type="submit">Save Home Page</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('appearance-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = e.target.querySelector('button[type="submit"]');
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+  
+  const formData = new FormData(e.target);
+  
+  try {
+    const res = await fetch('/api/admin/settings', {
+      method: 'POST',
+      body: formData
+    });
+    
+    if (res.ok) {
+      alert('Home Page updated successfully!');
+      window.location.reload();
+    } else {
+      alert('Failed to save settings');
+    }
+  } catch (err) {
+    alert('An error occurred');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Save Home Page';
+  }
+});
+</script>
+
+<%- include('../partials/footer') %>

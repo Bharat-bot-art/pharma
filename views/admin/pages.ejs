@@ -1,0 +1,84 @@
+<%
+  const page = 'admin';
+  const adminSection = 'pages';
+%>
+<%- include('../partials/head', { page, title }) %>
+
+<div class="container" style="padding:40px 0 64px">
+  <div class="acc-head">
+    <div>
+      <h1 style="font-size:28px;margin-bottom:4px">Static Pages & Content</h1>
+      <p class="text-muted" style="margin:0">Manage About Us, Terms, Privacy, and other static content.</p>
+    </div>
+  </div>
+
+  <div class="admin-layout">
+    <%- include('partials/nav', { adminSection }) %>
+    <div>
+      <div class="co-section" style="max-width: 800px;">
+        <form id="pages-form">
+          <h2 style="font-size: 18px; margin-bottom: 20px;">About Us</h2>
+          <div class="field">
+            <textarea class="input" name="page_about" rows="6" placeholder="Enter About Us content (HTML allowed)..."><%= settings.page_about || '' %></textarea>
+          </div>
+          
+          <hr style="margin: 30px 0; border-top: 1px solid var(--ink-100);">
+          
+          <h2 style="font-size: 18px; margin-bottom: 20px;">Terms & Conditions</h2>
+          <div class="field">
+            <textarea class="input" name="page_terms" rows="6" placeholder="Enter Terms & Conditions content (HTML allowed)..."><%= settings.page_terms || '' %></textarea>
+          </div>
+          
+          <hr style="margin: 30px 0; border-top: 1px solid var(--ink-100);">
+          
+          <h2 style="font-size: 18px; margin-bottom: 20px;">Privacy Policy</h2>
+          <div class="field">
+            <textarea class="input" name="page_privacy" rows="6" placeholder="Enter Privacy Policy content (HTML allowed)..."><%= settings.page_privacy || '' %></textarea>
+          </div>
+          
+          <hr style="margin: 30px 0; border-top: 1px solid var(--ink-100);">
+          
+          <h2 style="font-size: 18px; margin-bottom: 20px;">Shipping & Returns</h2>
+          <div class="field">
+            <textarea class="input" name="page_shipping" rows="6" placeholder="Enter Shipping & Returns content (HTML allowed)..."><%= settings.page_shipping || '' %></textarea>
+          </div>
+          
+          <div class="row" style="margin-top: 40px; justify-content: flex-end;">
+            <button class="btn btn-primary btn-lg" type="submit">Save All Content</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('pages-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = e.target.querySelector('button');
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+  
+  const formData = new FormData(e.target);
+  
+  try {
+    const res = await fetch('/api/admin/settings', {
+      method: 'POST',
+      body: formData
+    });
+    
+    if (res.ok) {
+      window.BIOSYM.toast.success('Pages saved successfully!');
+    } else {
+      window.BIOSYM.toast.error('Failed to save pages');
+    }
+  } catch (err) {
+    window.BIOSYM.toast.error('An error occurred');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Save All Content';
+  }
+});
+</script>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,20 @@
+<div class="cart-drawer-backdrop" data-cart-backdrop></div>
+<aside class="cart-drawer" data-cart-drawer aria-label="Shopping cart">
+  <div class="cart-drawer-head">
+    <div style="display:flex;align-items:center;gap:10px"><span style="display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--green-50);color:var(--green-600)"><%- icon('bag') %></span><strong style="font-size:16px">Your Cart</strong></div>
+    <button class="icon-btn" data-close-cart aria-label="Close cart"><%- icon('close') %></button>
+  </div>
+  <div class="cart-drawer-items" data-cart-items>
+    <div style="text-align:center;padding:48px 0;color:var(--ink-400)">
+      <div class="skeleton" style="width:64px;height:64px;border-radius:50%;margin:0 auto 14px"></div>
+      <p style="margin:0">Loading your cart…</p>
+    </div>
+  </div>
+  <div class="cart-drawer-foot" data-cart-foot style="display:none">
+    <div class="row" style="justify-content:space-between">
+      <span class="text-sm" style="color:var(--ink-500);font-weight:600">Subtotal</span>
+      <span class="strong" style="font-size:18px" data-cart-subtotal>₹0</span>
+    </div>
+    <a class="btn btn-primary btn-block" href="/cart">View Cart &amp; Checkout</a>
+  </div>
+</aside>

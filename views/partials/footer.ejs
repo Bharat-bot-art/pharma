@@ -1,0 +1,15 @@
+</main>
+
+<%- include('footer-site') %>
+
+<div class="toast-wrap" data-toasts aria-live="polite"></div>
+
+<script>
+  window.BIOSYM_WISHLIST = <%- typeof wishlistIds !== 'undefined' ? JSON.stringify([...wishlistIds]) : '[]' %>;
+</script>
+<script src="/js/toast.js" defer></script>
+<script src="/js/header.js" defer></script>
+<script src="/js/cart.js" defer></script>
+<script src="/js/main.js" defer></script>
+</body>
+</html>

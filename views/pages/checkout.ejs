@@ -1,0 +1,65 @@
+<%
+  const page = 'checkout';
+%>
+<%- include('../partials/head', { page, title }) %>
+<div class="page-hero">
+  <div class="container"><h1>Checkout</h1><p>Almost there — confirm your delivery details and payment.</p></div>
+</div>
+<div class="container" style="padding:40px 0 64px">
+  <form class="co-layout" data-checkout-form novalidate>
+    <div>
+      <div class="co-section">
+        <h2><span class="step-num">1</span> Delivery Details</h2>
+        <div class="co-grid-2">
+          <div class="field">
+            <label class="label" for="co-name">Full Name</label>
+            <input class="input" id="co-name" name="name" value="<%= user.full_name %>" autocomplete="name" required>
+          </div>
+          <div class="field">
+            <label class="label" for="co-mobile">Mobile Number</label>
+            <input class="input" id="co-mobile" name="mobile" value="<%= user.mobile || '' %>" inputmode="numeric" maxlength="10" autocomplete="tel" required>
+          </div>
+          <div class="field" style="grid-column:1/-1">
+            <label class="label" for="co-address">Full Address</label>
+            <textarea class="input" id="co-address" name="address" rows="3" placeholder="House no, street, area, landmark" required></textarea>
+          </div>
+          <div class="field">
+            <label class="label" for="co-city">City</label>
+            <input class="input" id="co-city" name="city" required>
+          </div>
+          <div class="field">
+            <label class="label" for="co-state">State</label>
+            <input class="input" id="co-state" name="state" required>
+          </div>
+          <div class="field">
+            <label class="label" for="co-pincode">Pincode</label>
+            <input class="input" id="co-pincode" name="pincode" inputmode="numeric" maxlength="6" required>
+          </div>
+        </div>
+      </div>
+
+      <div class="co-section">
+        <h2><span class="step-num">2</span> Payment Method</h2>
+        <div style="display:grid;gap:12px" data-pay-options>
+          <div class="skeleton" style="height:64px"></div>
+        </div>
+      </div>
+    </div>
+
+    <aside class="order-summary" data-checkout-summary>
+      <h3 style="font-size:17px;margin-bottom:14px">Order Summary</h3>
+      <div data-checkout-items><div class="skeleton" style="height:40px;margin-bottom:8px"></div></div>
+      <div style="border-top:1px solid var(--ink-100);margin:12px 0"></div>
+      <div class="sum-row"><span>Subtotal</span><span data-summary-subtotal>₹0</span></div>
+      <div class="sum-row"><span>Delivery</span><span data-summary-shipping>₹0</span></div>
+      <div class="sum-row"><span>GST</span><span>Included</span></div>
+      <div class="sum-row total"><span>Total</span><span data-summary-total>₹0</span></div>
+      <button class="btn btn-primary btn-block btn-lg" type="submit" data-place-order style="margin-top:16px">
+        Place Order · COD
+      </button>
+      <p class="text-xs" style="color:var(--ink-400);text-align:center;margin-top:10px">By placing this order you agree to our terms.</p>
+    </aside>
+  </form>
+</div>
+<%- include('../partials/footer') %>
+<script src="/js/checkout.js" defer></script>

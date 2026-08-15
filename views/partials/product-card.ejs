@@ -1,0 +1,34 @@
+<article class="product-card fade-up" data-product-id="<%= p.id %>" style="animation-delay:<%= (typeof i !== 'undefined' ? (i % 8) * 0.04 : 0) %>s">
+  <a class="product-media" href="/product/<%= p.slug %>">
+    <img src="/img/product/<%= p.image_hue %>.svg" alt="<%= p.name %>" loading="lazy">
+  </a>
+  <div class="product-flags">
+    <% if (p.discount > 0) { %><span class="chip chip-green"><%= p.discount %>% Off</span><% } %>
+    <% if (p.isPrescription) { %><span class="chip chip-rx">Rx</span><% } %>
+    <% if (p.featured) { %><span class="chip chip-blue">Featured</span><% } %>
+  </div>
+  <button class="wish-btn <%= typeof wishlistIds !== 'undefined' && wishlistIds.has(p.id) ? 'active' : '' %>" data-wish="<%= p.id %>" aria-label="Toggle wishlist">
+    <%- icon('heart') %>
+  </button>
+  <div class="product-body">
+    <div class="product-cat"><%= p.category %></div>
+    <h3 class="product-name"><a href="/product/<%= p.slug %>"><%= p.name %></a></h3>
+    <p class="product-desc"><%= p.shortDescription %></p>
+    <div class="stars">
+      <% const full = Math.round(p.rating); for (let s = 1; s <= 5; s++) { %>
+        <svg class="<%= s <= full ? '' : 'empty' %>" viewBox="0 0 24 24" fill="<%= s <= full ? 'currentColor' : 'none' %>" stroke="currentColor" stroke-width="1.8"><path d="m12 2 2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8L12 2Z"/></svg>
+      <% } %>
+      <span class="rating-num"><%= p.rating %> (<%= p.ratingCount %>)</span>
+    </div>
+    <div class="product-foot">
+      <div class="price-line">
+        <span class="price">₹<%= p.price.toFixed(0) %></span>
+        <% if (p.mrp > p.price) { %><span class="mrp">₹<%= p.mrp.toFixed(0) %></span><% } %>
+        <% if (p.discount > 0) { %><span class="discount"><%= p.discount %>% off</span><% } %>
+      </div>
+      <button class="cart-btn" data-add-cart="<%= p.id %>" data-name="<%= p.name %>">
+        <%- icon('bag') %> <span>Add to Cart</span>
+      </button>
+    </div>
+  </div>
+</article>
