@@ -45,7 +45,7 @@
             <div style="display:grid;gap:12px;margin-top:18px">
               <% c.items.forEach((it) => { %>
                 <div class="cd-row" style="background:var(--ink-50);border:1px solid var(--ink-100);border-radius:var(--r-md);padding:10px">
-                  <a class="cd-thumb" style="width:52px;height:52px" href="/product/<%= it.product.slug %>"><img src="<%= it.product.image ? (it.product.image.startsWith('data:') ? it.product.image : '/uploads/products/' + it.product.image) : '/img/product/' + it.product.image_hue + '.svg' %>" alt="<%= it.product.name %>"></a>
+                  <a class="cd-thumb" style="width:52px;height:52px" href="/product/<%= it.product.slug %>"><img src="<%= it.product.image ? (it.product.image.startsWith('data:') || it.product.image.startsWith('http') ? it.product.image : '/uploads/products/' + it.product.image) : '/img/product/' + it.product.image_hue + '.svg' %>" alt="<%= it.product.name %>"></a>
                   <div class="cd-info">
                     <div class="cd-name"><a href="/product/<%= it.product.slug %>"><%= it.product.name %></a></div>
                     <div class="text-xs" style="color:var(--ink-400)">Qty <%= it.qty %> · <%= money(it.product.price) %> each</div>

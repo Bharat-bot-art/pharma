@@ -61,7 +61,7 @@
       productsBody.innerHTML = r.data.products.map((p) => `
         <tr>
           <td style="display:flex;align-items:center;gap:12px">
-            <div class="table-img"><img src="${p.image ? (p.image.startsWith('data:') ? p.image : '/uploads/products/' + p.image) : '/img/product/' + p.imageHue + '.svg'}" alt=""></div>
+            <div class="table-img"><img src="${p.image ? (p.image.startsWith('data:') || p.image.startsWith('http') ? p.image : '/uploads/products/' + p.image) : '/img/product/' + p.imageHue + '.svg'}" alt=""></div>
             <div style="line-height:1.3">
               <a href="/product/${p.slug}" target="_blank" style="font-weight:600;color:var(--ink-700)">${esc(p.name)}</a>
               <div class="text-xs" style="color:var(--ink-400)">${p.isPrescription ? '<span style="color:var(--danger)">Rx</span> · ' : ''}${esc(p.shortDescription)}</div>
@@ -137,8 +137,10 @@
     form.elements.description.value = p ? p.description || '' : '';
     form.elements.isPrescription.checked = p ? p.isPrescription : false;
     form.elements.featured.checked = p ? p.featured : false;
+    form.elements.productImageUrl = form.elements.productImageUrl || {};
+    form.elements.productImageUrl.value = (p && p.image && p.image.startsWith('http')) ? p.image : '';
     document.querySelector('[data-product-modal-title]').textContent = p ? 'Edit Product' : 'Add Product';
-    showProductImagePreview(p && p.image ? (p.image.startsWith('data:') ? p.image : '/uploads/products/' + p.image) : null);
+    showProductImagePreview(p && p.image ? (p.image.startsWith('data:') || p.image.startsWith('http') ? p.image : '/uploads/products/' + p.image) : null);
     modal.style.display = 'grid';
   }
 
@@ -151,6 +153,7 @@
     const f = e.target;
     const id = f.elements.id.value;
     let imageBase64 = null;
+    let imageUrl = f.elements.productImageUrl?.value?.trim();
     if (productImageInput?.files[0]) {
       const file = productImageInput.files[0];
       imageBase64 = await new Promise((resolve) => {
@@ -158,6 +161,7 @@
         reader.onload = (e) => resolve(e.target.result);
         reader.readAsDataURL(file);
       });
+      imageUrl = null; // file takes precedence
     }
 
     const body = {
@@ -176,6 +180,7 @@
       featured: f.elements.featured.checked,
     };
     if (imageBase64) body.imageBase64 = imageBase64;
+    else if (imageUrl) body.imageBase64 = imageUrl;
 
     const btn = f.querySelector('[data-save-product]');
     loadingBtn(btn, true);

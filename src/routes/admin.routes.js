@@ -206,7 +206,7 @@ router.post('/products', (req, res, next) => {
       isPrescription ? 1 : 0, featured ? 1 : 0,
       rating ? Number(rating) : 0, ratingCount ? parseInt(ratingCount, 10) : 0,
       imageHue ? parseInt(imageHue, 10) : 0, tags || '', brand || '',
-      imageBase64 && imageBase64.startsWith('data:') ? imageBase64 : null
+      imageBase64 && (imageBase64.startsWith('data:') || imageBase64.startsWith('http')) ? imageBase64 : null
     );
     res.status(201).json({ ok: true, id: result.lastInsertRowid });
   } catch (e) { next(e); }
@@ -234,10 +234,10 @@ router.patch('/products/:id', (req, res, next) => {
       tags: b.tags !== undefined ? b.tags : p.tags,
       brand: b.brand !== undefined ? b.brand : p.brand,
       gallery_hues: b.galleryHues !== undefined ? b.galleryHues : p.gallery_hues,
-      image: b.imageBase64 && b.imageBase64.startsWith('data:') ? b.imageBase64 : p.image,
+      image: b.imageBase64 && (b.imageBase64.startsWith('data:') || b.imageBase64.startsWith('http')) ? b.imageBase64 : p.image,
     };
     
-    if (b.imageBase64 && p.image && !p.image.startsWith('data:')) {
+    if (b.imageBase64 && p.image && !p.image.startsWith('data:') && !p.image.startsWith('http')) {
       deleteFile('products', p.image);
     }
     

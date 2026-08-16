@@ -48,12 +48,15 @@
       </div>
       <div class="field">
         <label class="label">Product Image</label>
-        <div class="row" style="gap:10px;align-items:center;flex-wrap:wrap">
+        <div class="row" style="gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px">
           <input type="file" class="input" name="productImage" accept="image/*" style="flex:1;min-width:200px">
           <div id="product-image-preview" style="display:none;width:60px;height:60px;border-radius:8px;overflow:hidden;border:1px solid var(--ink-200)"><img src="" alt="Preview" style="width:100%;height:100%;object-fit:cover"></div>
           <button type="button" class="btn btn-outline btn-sm" id="remove-product-image" style="display:none">Remove</button>
         </div>
-        <p class="text-xs text-muted" style="margin:4px 0 0">Upload JPG/PNG/WebP (max 5MB). Falls back to color hue if not provided.</p>
+        <div class="row" style="gap:10px;align-items:center">
+          <span class="text-xs text-muted" style="white-space:nowrap">OR Image URL:</span>
+          <input type="url" class="input" name="productImageUrl" placeholder="https://example.com/image.jpg" style="flex:1">
+        </div>
       </div>
       <div class="field"><label class="label">Short Description</label><input class="input" name="shortDescription"></div>
       <div class="field"><label class="label">Full Description</label><textarea class="input" name="description" rows="3"></textarea></div>
