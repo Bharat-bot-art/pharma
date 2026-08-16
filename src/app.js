@@ -28,8 +28,8 @@ function createApp() {
   app.set('views', path.join(process.cwd(), 'views'));
   app.disable('x-powered-by');
 
-  app.use(express.json({ limit: '256kb' }));
-  app.use(express.urlencoded({ extended: false, limit: '256kb' }));
+  app.use(express.json({ limit: '10mb' }));
+  app.use(express.urlencoded({ extended: true, limit: '10mb' }));
   app.use(cookieParser());
   app.use(optionalAuth);
   app.use(setViewLocals);

@@ -150,6 +150,16 @@
     e.preventDefault();
     const f = e.target;
     const id = f.elements.id.value;
+    let imageBase64 = null;
+    if (productImageInput?.files[0]) {
+      const file = productImageInput.files[0];
+      imageBase64 = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.readAsDataURL(file);
+      });
+    }
+
     const body = {
       name: f.elements.name.value.trim(),
       categoryId: f.elements.categoryId.value ? parseInt(f.elements.categoryId.value, 10) : null,
@@ -165,6 +175,8 @@
       isPrescription: f.elements.isPrescription.checked,
       featured: f.elements.featured.checked,
     };
+    if (imageBase64) body.imageBase64 = imageBase64;
+
     const btn = f.querySelector('[data-save-product]');
     loadingBtn(btn, true);
     const res = await api(id ? `/api/admin/products/${id}` : '/api/admin/products', {
@@ -175,12 +187,6 @@
     loadingBtn(btn, false);
     if (res.ok) {
       window.BIOSYM.toast.success(id ? 'Product updated.' : 'Product added.');
-      const newId = id || res.data.id;
-      if (productImageInput?.files[0]) {
-        const formData = new FormData();
-        formData.append('image', productImageInput.files[0]);
-        await api(`/api/admin/products/${newId}/image`, { method: 'POST', body: formData });
-      }
       setTimeout(() => location.reload(), 600);
     } else {
       window.BIOSYM.toast.error(res.data.message || 'Could not save product.');
