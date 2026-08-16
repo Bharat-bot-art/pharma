@@ -1,0 +1,12 @@
+[build]
+  functions = "netlify/functions"
+  publish = "public"
+
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/api"
+  status = 200
+
+[functions]
+  included_files = ["views/**", "data/**", "src/db/**"]
+  node_bundler = "esbuild"
