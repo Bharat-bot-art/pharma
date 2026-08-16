@@ -16,7 +16,7 @@
     <div class="pd-media">
       <div class="pd-main-image-wrap">
         <div class="pd-main-image">
-          <img src="/img/product/<%= p.imageHue %>.svg" alt="<%= p.name %>" id="pd-main-img">
+          <img src="<%= p.image ? '/uploads/products/' + p.image : '/img/product/' + p.imageHue + '.svg' %>" alt="<%= p.name %>" id="pd-main-img">
         </div>
         <% if (p.discount > 0) { %>
           <div class="pd-discount-badge"><%= p.discount %>% OFF</div>
@@ -28,13 +28,13 @@
       <!-- Thumbnail strip -->
       <div class="pd-thumbnails">
         <div class="pd-thumb active">
-          <img src="/img/product/<%= p.imageHue %>.svg" alt="<%= p.name %>">
+          <img src="<%= p.image ? '/uploads/products/' + p.image : '/img/product/' + p.imageHue + '.svg' %>" alt="<%= p.name %>">
         </div>
         <div class="pd-thumb">
-          <img src="/img/product/<%= p.imageHue %>.svg" alt="<%= p.name %>" style="opacity:.5">
+          <img src="<%= p.image ? '/uploads/products/' + p.image : '/img/product/' + p.imageHue + '.svg' %>" alt="<%= p.name %>" style="opacity:.5">
         </div>
         <div class="pd-thumb">
-          <img src="/img/product/<%= p.imageHue %>.svg" alt="<%= p.name %>" style="opacity:.35">
+          <img src="<%= p.image ? '/uploads/products/' + p.image : '/img/product/' + p.imageHue + '.svg' %>" alt="<%= p.name %>" style="opacity:.35">
         </div>
       </div>
       <!-- Quality badges -->
