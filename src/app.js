@@ -40,7 +40,7 @@ function createApp() {
 
   const uploadDir = process.env.AWS_LAMBDA_FUNCTION_NAME
     ? path.join('/tmp', 'uploads')
-    : path.join(process.cwd(), 'public', 'uploads');
+    : path.join(process.cwd(), 'data', 'uploads');
 
   app.use('/uploads', express.static(uploadDir, {
     maxAge: process.env.NODE_ENV === 'production' ? '7d' : 0,

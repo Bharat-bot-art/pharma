@@ -5,7 +5,7 @@ const { v4: uuidv4 } = require('uuid');
 
 const uploadDir = process.env.AWS_LAMBDA_FUNCTION_NAME
   ? path.join('/tmp', 'uploads')
-  : path.join(__dirname, '..', '..', 'public', 'uploads');
+  : path.join(__dirname, '..', '..', 'data', 'uploads');
 const productsDir = path.join(uploadDir, 'products');
 const bannersDir = path.join(uploadDir, 'banners');
 
