@@ -2,6 +2,7 @@ const path = require('path');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const { migrate } = require('./config/db');
+const { seedAdmin } = require('./scripts/seedAdmin');
 const { optionalAuth, setViewLocals } = require('./middleware/auth');
 const { notFoundHandler, errorHandler } = require('./middleware/errorHandler');
 const img = require('./services/img');
@@ -20,6 +21,7 @@ const adminRoutes = require('./routes/admin.routes');
 
 function createApp() {
   migrate();
+  seedAdmin();
 
   const app = express();
   app.set('view engine', 'ejs');
