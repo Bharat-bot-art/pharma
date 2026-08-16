@@ -23,7 +23,7 @@ function createApp() {
 
   const app = express();
   app.set('view engine', 'ejs');
-  app.set('views', path.join(__dirname, '..', 'views'));
+  app.set('views', path.join(process.cwd(), 'views'));
   app.disable('x-powered-by');
 
   app.use(express.json({ limit: '256kb' }));
@@ -32,11 +32,11 @@ function createApp() {
   app.use(optionalAuth);
   app.use(setViewLocals);
 
-  app.use(express.static(path.join(__dirname, '..', 'public'), {
+  app.use(express.static(path.join(process.cwd(), 'public'), {
     maxAge: process.env.NODE_ENV === 'production' ? '7d' : 0,
   }));
 
-  app.use('/uploads', express.static(path.join(__dirname, '..', 'public', 'uploads'), {
+  app.use('/uploads', express.static(path.join(process.cwd(), 'public', 'uploads'), {
     maxAge: process.env.NODE_ENV === 'production' ? '7d' : 0,
   }));
 

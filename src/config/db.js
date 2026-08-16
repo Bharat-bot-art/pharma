@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { DatabaseSync } = require('node:sqlite');
+const DatabaseSync = require('better-sqlite3');
 
 const dataDir = process.env.AWS_LAMBDA_FUNCTION_NAME ? '/tmp' : path.join(__dirname, '..', '..', 'data');
 if (!process.env.AWS_LAMBDA_FUNCTION_NAME && !fs.existsSync(dataDir)) {
@@ -14,7 +14,7 @@ db.exec('PRAGMA journal_mode = WAL;');
 db.exec('PRAGMA foreign_keys = ON;');
 
 function migrate() {
-  const schema = fs.readFileSync(path.join(__dirname, '..', 'db', 'schema.sql'), 'utf8');
+  const schema = fs.readFileSync(path.join(process.cwd(), 'src', 'db', 'schema.sql'), 'utf8');
   db.exec(schema);
   migrateColumns();
 }
