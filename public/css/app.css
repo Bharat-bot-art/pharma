@@ -16,9 +16,39 @@
 .hero-stat-lbl { display: block; font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 4px; font-weight: 500; }
 
 /* ============ SHOP FILTERS ============ */
-.shop-layout { display: grid; grid-template-columns: 255px 1fr; gap: 28px; align-items: start; }
-.shop-side { position: sticky; top: calc(var(--header-h) + 16px); display: grid; gap: 14px; }
+.shop-layout { display: grid; grid-template-columns: 1fr; gap: 28px; align-items: start; }
 .shop-main { min-width: 0; }
+
+/* Filter toggle button */
+.filter-toggle-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--green-600); color: #fff; border: none;
+  border-radius: var(--r-md); padding: 10px 20px; font-size: 14px;
+  font-weight: 600; cursor: pointer; margin-bottom: 16px;
+  transition: background 0.2s;
+}
+.filter-toggle-btn:hover { background: var(--green-700); }
+.filter-active-dot {
+  width: 8px; height: 8px; background: #fbbf24;
+  border-radius: 50%; display: inline-block;
+}
+
+/* Overlay */
+.filter-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.4); z-index: 199;
+}
+.filter-overlay.open { display: block; }
+
+/* Slide-in panel */
+.shop-side {
+  position: fixed; top: 0; left: -320px; width: 300px; height: 100vh;
+  background: var(--surface); z-index: 200; overflow-y: auto;
+  padding: 24px 16px; display: grid; gap: 14px; align-content: start;
+  transition: left 0.3s cubic-bezier(0.4,0,0.2,1);
+  box-shadow: 4px 0 24px rgba(0,0,0,0.12);
+}
+.shop-side.open { left: 0; }
 .filter-group {
   background: var(--surface); border: 1px solid var(--ink-200); border-radius: var(--r-lg);
   padding: 18px; overflow: hidden;
@@ -79,12 +109,7 @@
 .pag-info { font-size: 13.5px; color: var(--ink-400); }
 
 @media (max-width: 1000px) {
-  .shop-layout { grid-template-columns: 220px 1fr; }
-}
-@media (max-width: 900px) {
   .shop-layout { grid-template-columns: 1fr; }
-  .shop-side { position: static; grid-template-columns: 1fr 1fr; }
-  .shop-main { margin-top: 0; }
 }
 
 /* ============ PRODUCT DETAIL ============ */

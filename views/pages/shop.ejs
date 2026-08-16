@@ -53,8 +53,18 @@
     </div>
   <% } %>
   <div class="shop-layout">
+    <!-- Filter toggle button (mobile & desktop) -->
+    <button class="filter-toggle-btn" id="filterToggleBtn" onclick="toggleFilterPanel()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px">
+        <path d="M3 6h18M7 12h10M11 18h2"/>
+      </svg>
+      Filters
+      <span class="filter-active-dot" id="filterActiveDot" style="display:<%= (q.category||q.rx||q.price_range)?'inline-block':'none' %>"></span>
+    </button>
+    <!-- Overlay -->
+    <div class="filter-overlay" id="filterOverlay" onclick="toggleFilterPanel()"></div>
     <!-- Sidebar filters -->
-    <aside class="shop-side">
+    <aside class="shop-side" id="shopSidePanel">
       <div class="filter-group">
         <div class="filter-group-head">
           <h4>Categories</h4>
@@ -119,6 +129,7 @@
           Clear All Filters
         </a>
       <% } %>
+      <button class="btn btn-outline btn-block" style="margin-top:12px" onclick="toggleFilterPanel()">Close ✕</button>
     </aside>
 
     <!-- Product area -->
@@ -192,4 +203,12 @@
     url.searchParams.set('sort', this.value);
     location.href = url.toString();
   });
+
+  function toggleFilterPanel() {
+    const panel = document.getElementById('shopSidePanel');
+    const overlay = document.getElementById('filterOverlay');
+    panel.classList.toggle('open');
+    overlay.classList.toggle('open');
+    document.body.style.overflow = panel.classList.contains('open') ? 'hidden' : '';
+  }
 </script>
