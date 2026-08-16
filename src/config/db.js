@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const DatabaseSync = require('better-sqlite3');
+const DatabaseSync = require('libsql');
 
 const dataDir = process.env.AWS_LAMBDA_FUNCTION_NAME ? '/tmp' : path.join(__dirname, '..', '..', 'data');
 if (!process.env.AWS_LAMBDA_FUNCTION_NAME && !fs.existsSync(dataDir)) {
@@ -8,7 +8,24 @@ if (!process.env.AWS_LAMBDA_FUNCTION_NAME && !fs.existsSync(dataDir)) {
 }
 
 const dbPath = path.join(dataDir, 'biosym.db');
-const db = new DatabaseSync(dbPath);
+const dbOptions = {};
+if (process.env.TURSO_DATABASE_URL) {
+  dbOptions.syncUrl = process.env.TURSO_DATABASE_URL;
+  dbOptions.authToken = process.env.TURSO_AUTH_TOKEN;
+}
+const db = new DatabaseSync(dbPath, dbOptions);
+
+if (process.env.TURSO_DATABASE_URL) {
+  try {
+    db.sync();
+    // Background sync
+    setInterval(() => {
+      try { db.sync(); } catch (e) { console.error('Turso sync error', e); }
+    }, 60000).unref();
+  } catch (e) {
+    console.error('Initial Turso sync failed:', e);
+  }
+}
 
 db.exec('PRAGMA journal_mode = WAL;');
 db.exec('PRAGMA foreign_keys = ON;');
