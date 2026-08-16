@@ -10,3 +10,4 @@
 [functions]
   included_files = ["views/**", "data/**", "src/db/**"]
   node_bundler = "esbuild"
+  external_node_modules = ["ejs"]
