@@ -1,6 +1,6 @@
 <article class="product-card fade-up" data-product-id="<%= p.id %>" style="animation-delay:<%= (typeof i !== 'undefined' ? (i % 8) * 0.04 : 0) %>s">
   <a class="product-media" href="/product/<%= p.slug %>">
-    <img src="<%= p.image ? '/uploads/products/' + p.image : '/img/product/' + p.image_hue + '.svg' %>" alt="<%= p.name %>" loading="lazy">
+    <img src="<%= p.image ? (p.image.startsWith('data:') ? p.image : '/uploads/products/' + p.image) : '/img/product/' + p.image_hue + '.svg' %>" alt="<%= p.name %>" loading="lazy">
   </a>
   <div class="product-flags">
     <% if (p.discount > 0) { %><span class="chip chip-green"><%= p.discount %>% Off</span><% } %>

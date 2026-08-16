@@ -1,4 +1,5 @@
 const express = require('express');
+const fs = require('fs');
 const { db } = require('../config/db');
 const { ApiError } = require('../utils/ApiError');
 const { requireAdmin } = require('../middleware/auth');
@@ -280,9 +281,15 @@ router.post('/products/:id/image', upload.single('image'), (req, res, next) => {
     const p = db.prepare('SELECT * FROM products WHERE id = ?').get(id);
     if (!p) throw ApiError.notFound('PRODUCT_NOT_FOUND', 'Product not found.');
     if (!req.file) throw ApiError.badRequest('VALIDATION', 'No image file provided.');
-    if (p.image) deleteFile('products', p.image);
-    const imageUrl = getPublicPath('products', req.file.filename);
-    db.prepare('UPDATE products SET image = ?, updated_at = datetime(\'now\') WHERE id = ?').run(req.file.filename, id);
+    
+    let imageUrl;
+    const fileBuffer = fs.readFileSync(req.file.path);
+    imageUrl = `data:${req.file.mimetype};base64,${fileBuffer.toString('base64')}`;
+    try { fs.unlinkSync(req.file.path); } catch (err) {}
+    
+    if (p.image && !p.image.startsWith('data:')) deleteFile('products', p.image);
+    
+    db.prepare('UPDATE products SET image = ?, updated_at = datetime(\'now\') WHERE id = ?').run(imageUrl, id);
     res.json({ ok: true, image: imageUrl });
   } catch (e) { next(e); }
 });

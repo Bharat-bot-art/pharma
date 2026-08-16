@@ -25,6 +25,7 @@ function hydrate(product) {
     featured: !!product.featured,
     tags: product.tags ? product.tags.split(',').map((t) => t.trim()).filter(Boolean) : [],
     brand: product.brand || '',
+    image: product.image,
     imageHue: product.image_hue,
     image_hue: product.image_hue,
     galleryHues: parseGallery(product.gallery_hues, product.image_hue),

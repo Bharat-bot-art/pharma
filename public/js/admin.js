@@ -60,10 +60,11 @@
       if (!r.ok) return;
       productsBody.innerHTML = r.data.products.map((p) => `
         <tr>
-          <td>
-            <div class="cd-row" style="align-items:center">
-              <div class="cd-thumb" style="width:46px;height:46px"><img src="${p.image ? p.image : '/img/product/' + p.imageHue + '.svg'}" alt=""></div>
-              <div><strong style="font-size:13.5px">${esc(p.name)}</strong>${p.isPrescription ? ' <span class="chip chip-rx" style="padding:1px 7px;font-size:10px">Rx</span>' : ''}</div>
+          <td style="display:flex;align-items:center;gap:12px">
+            <div class="table-img"><img src="${p.image ? (p.image.startsWith('data:') ? p.image : '/uploads/products/' + p.image) : '/img/product/' + p.imageHue + '.svg'}" alt=""></div>
+            <div style="line-height:1.3">
+              <a href="/product/${p.slug}" target="_blank" style="font-weight:600;color:var(--ink-700)">${esc(p.name)}</a>
+              <div class="text-xs" style="color:var(--ink-400)">${p.isPrescription ? '<span style="color:var(--danger)">Rx</span> · ' : ''}${esc(p.shortDescription)}</div>
             </div>
           </td>
           <td>${esc(p.category || '—')}</td>
@@ -137,7 +138,7 @@
     form.elements.isPrescription.checked = p ? p.isPrescription : false;
     form.elements.featured.checked = p ? p.featured : false;
     document.querySelector('[data-product-modal-title]').textContent = p ? 'Edit Product' : 'Add Product';
-    showProductImagePreview(p && p.image ? p.image : null);
+    showProductImagePreview(p && p.image ? (p.image.startsWith('data:') ? p.image : '/uploads/products/' + p.image) : null);
     modal.style.display = 'grid';
   }
 
