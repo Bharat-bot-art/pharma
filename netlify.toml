@@ -8,6 +8,6 @@
   status = 200
 
 [functions]
-  included_files = ["views/**", "data/**", "src/db/**"]
+  included_files = ["node_modules/@libsql/**", "views/**", "data/**", "src/db/**"]
   node_bundler = "esbuild"
-  external_node_modules = ["ejs"]
+  external_node_modules = ["ejs", "libsql", "@libsql/linux-x64-gnu"]
