@@ -4,6 +4,7 @@
   "description": "BIOSYM Pharma Private Limited — premium pharmaceutical e-commerce platform",
   "main": "server.js",
   "scripts": {
+    "build": "npm install @libsql/linux-x64-gnu --no-save",
     "start": "node --disable-warning=ExperimentalWarning server.js",
     "dev": "node --disable-warning=ExperimentalWarning server.js",
     "seed": "node --disable-warning=ExperimentalWarning src/db/seed.js",
