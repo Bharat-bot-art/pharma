@@ -41,6 +41,7 @@ const COLUMN_MIGRATIONS = [
   ['products', 'brand', "TEXT"],
   ['products', 'gallery_hues', "TEXT"],
   ['products', 'image', "TEXT"],
+  ['products', 'updated_at', "TEXT NOT NULL DEFAULT (datetime('now'))"],
   ['categories', 'parent_id', "INTEGER"],
   ['orders', 'address_id', "INTEGER"],
   ['orders', 'applied_coupon', "TEXT"],
