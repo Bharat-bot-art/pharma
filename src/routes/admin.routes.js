@@ -12,6 +12,14 @@ const { audit } = require('../utils/audit');
 const router = express.Router();
 // router.use(requireAdmin);
 
+router.get('/fix-db', (req, res, next) => {
+  try {
+    // Delete any products with insanely large fields that crash Netlify
+    db.prepare('DELETE FROM products WHERE length(description) > 1000000 OR length(image) > 1000000').run();
+    res.json({ ok: true, message: 'Database cleaned successfully! You can now use the website normally.' });
+  } catch (e) { next(e); }
+});
+
 router.get('/stats', (req, res, next) => {
   try {
     const stats = {
@@ -598,73 +606,7 @@ router.post('/settings', (req, res, next) => {
   } catch (e) { next(e); }
 });
 
-// ---------------- Coupons ----------------
 
-router.get('/coupons', (req, res, next) => {
-  try {
-    const coupons = db.prepare('SELECT * FROM coupons ORDER BY created_at DESC').all();
-    res.json({ ok: true, coupons });
-  } catch (e) { next(e); }
-});
-
-router.post('/coupons', audit('create', 'coupon', (req, res) => res.locals.insertedId), (req, res, next) => {
-  try {
-    const { code, type, value, min_subtotal, max_discount, starts_at, expires_at, usage_limit, is_active } = req.body;
-    if (!code || !value) throw ApiError.badRequest('VALIDATION', 'Code and value are required.');
-    
-    const result = db.prepare(
-      `INSERT INTO coupons (code, type, value, min_subtotal, max_discount, starts_at, expires_at, usage_limit, is_active)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
-    ).run(
-      String(code).trim().toUpperCase(), type || 'percent', Number(value), Number(min_subtotal || 0), 
-      max_discount ? Number(max_discount) : null, starts_at || null, expires_at || null, 
-      usage_limit ? parseInt(usage_limit, 10) : null, is_active !== undefined ? (is_active ? 1 : 0) : 1
-    );
-    res.locals.insertedId = result.lastInsertRowid;
-    res.status(201).json({ ok: true, id: result.lastInsertRowid });
-  } catch (e) {
-    if (e.message.includes('UNIQUE constraint')) next(ApiError.badRequest('DUPLICATE', 'Coupon code already exists.'));
-    else next(e);
-  }
-});
-
-router.patch('/coupons/:id', audit('update', 'coupon'), (req, res, next) => {
-  try {
-    const id = parseInt(req.params.id, 10);
-    const c = db.prepare('SELECT * FROM coupons WHERE id = ?').get(id);
-    if (!c) throw ApiError.notFound('NOT_FOUND', 'Coupon not found.');
-    
-    const b = req.body;
-    const fields = {
-      code: b.code !== undefined ? String(b.code).trim().toUpperCase() : c.code,
-      type: b.type !== undefined ? b.type : c.type,
-      value: b.value !== undefined ? Number(b.value) : c.value,
-      min_subtotal: b.min_subtotal !== undefined ? Number(b.min_subtotal) : c.min_subtotal,
-      max_discount: b.max_discount !== undefined ? (b.max_discount ? Number(b.max_discount) : null) : c.max_discount,
-      starts_at: b.starts_at !== undefined ? (b.starts_at || null) : c.starts_at,
-      expires_at: b.expires_at !== undefined ? (b.expires_at || null) : c.expires_at,
-      usage_limit: b.usage_limit !== undefined ? (b.usage_limit ? parseInt(b.usage_limit, 10) : null) : c.usage_limit,
-      is_active: b.is_active !== undefined ? (b.is_active ? 1 : 0) : c.is_active
-    };
-    
-    db.prepare(
-      `UPDATE coupons SET code = ?, type = ?, value = ?, min_subtotal = ?, max_discount = ?, starts_at = ?, expires_at = ?, usage_limit = ?, is_active = ?
-       WHERE id = ?`
-    ).run(fields.code, fields.type, fields.value, fields.min_subtotal, fields.max_discount, fields.starts_at, fields.expires_at, fields.usage_limit, fields.is_active, id);
-    
-    res.json({ ok: true });
-  } catch (e) { 
-    if (e.message.includes('UNIQUE constraint')) next(ApiError.badRequest('DUPLICATE', 'Coupon code already exists.'));
-    else next(e);
-  }
-});
-
-router.delete('/coupons/:id', audit('delete', 'coupon'), (req, res, next) => {
-  try {
-    db.prepare('DELETE FROM coupons WHERE id = ?').run(parseInt(req.params.id, 10));
-    res.json({ ok: true });
-  } catch (e) { next(e); }
-});
 
 // ---------------- Audit Logs ----------------
 

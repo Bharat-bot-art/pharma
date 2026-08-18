@@ -2,9 +2,9 @@ const { db } = require('../config/db');
 const { discountPercent } = require('../utils/helpers');
 
 const PRODUCT_SELECT = `
-  SELECT p.id, p.category_id, p.name, p.slug, p.short_description, 
+  SELECT p.id, p.category_id, SUBSTR(p.name, 1, 255) AS name, p.slug, SUBSTR(p.short_description, 1, 1000) AS short_description, 
          p.mrp, p.price, p.stock, p.is_prescription, p.featured, p.rating, 
-         p.rating_count, p.image_hue, p.tags, p.brand, p.gallery_hues, p.created_at, p.updated_at,
+         p.rating_count, p.image_hue, SUBSTR(p.tags, 1, 1000) AS tags, SUBSTR(p.brand, 1, 255) AS brand, p.gallery_hues, p.created_at, p.updated_at,
          CASE WHEN p.image LIKE 'data:%' THEN 'data:image' ELSE p.image END AS image,
          c.name AS category_name, c.slug AS category_slug,
          (SELECT COALESCE(SUM(oi.qty), 0) FROM order_items oi WHERE oi.product_id = p.id) AS sold_count
