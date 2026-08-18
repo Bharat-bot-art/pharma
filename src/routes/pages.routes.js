@@ -37,9 +37,9 @@ router.use((req, res, next) => {
 });
 
 router.get('/', (req, res) => {
-  const featured = db.prepare('SELECT * FROM products WHERE featured = 1 ORDER BY rating DESC LIMIT 8').all().map(catalog.hydrate);
+  const featured = db.prepare(`${catalog.PRODUCT_SELECT} WHERE p.featured = 1 ORDER BY p.rating DESC LIMIT 8`).all().map(catalog.hydrate);
   const bestSellers = catalog.bestSellers(8);
-  const topRated = db.prepare('SELECT * FROM products ORDER BY rating_count DESC LIMIT 8').all().map(catalog.hydrate);
+  const topRated = db.prepare(`${catalog.PRODUCT_SELECT} ORDER BY p.rating_count DESC LIMIT 8`).all().map(catalog.hydrate);
   const newest = catalog.newest(8);
   const categories = catalog.getCategoryTree();
   const combos = catalog.getCombos().slice(0, 4);

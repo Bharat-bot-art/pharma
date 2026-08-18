@@ -2,7 +2,20 @@ const { db } = require('../config/db');
 const { discountPercent } = require('../utils/helpers');
 
 const PRODUCT_SELECT = `
-  SELECT p.*, c.name AS category_name, c.slug AS category_slug,
+  SELECT p.id, p.category_id, p.name, p.slug, p.short_description, 
+         p.mrp, p.price, p.stock, p.is_prescription, p.featured, p.rating, 
+         p.rating_count, p.image_hue, p.tags, p.brand, p.gallery_hues, p.created_at, p.updated_at,
+         CASE WHEN p.image LIKE 'data:%' THEN 'data:image' ELSE p.image END AS image,
+         c.name AS category_name, c.slug AS category_slug,
+         (SELECT COALESCE(SUM(oi.qty), 0) FROM order_items oi WHERE oi.product_id = p.id) AS sold_count
+  FROM products p LEFT JOIN categories c ON c.id = p.category_id`;
+
+const PRODUCT_SELECT_FULL = `
+  SELECT p.id, p.category_id, p.name, p.slug, p.short_description, p.description, 
+         p.mrp, p.price, p.stock, p.is_prescription, p.featured, p.rating, 
+         p.rating_count, p.image_hue, p.tags, p.brand, p.gallery_hues, p.created_at, p.updated_at,
+         CASE WHEN p.image LIKE 'data:%' THEN 'data:image' ELSE p.image END AS image,
+         c.name AS category_name, c.slug AS category_slug,
          (SELECT COALESCE(SUM(oi.qty), 0) FROM order_items oi WHERE oi.product_id = p.id) AS sold_count
   FROM products p LEFT JOIN categories c ON c.id = p.category_id`;
 
@@ -25,7 +38,11 @@ function hydrate(product) {
     featured: !!product.featured,
     tags: product.tags ? product.tags.split(',').map((t) => t.trim()).filter(Boolean) : [],
     brand: product.brand || '',
-    image: product.image,
+    image: product.image && product.image.startsWith('data:') 
+      ? `/api/img/product/${product.id}` 
+      : (product.image && !product.image.startsWith('http') && !product.image.startsWith('/') 
+          ? `/uploads/products/${product.image}` 
+          : product.image),
     imageHue: product.image_hue,
     image_hue: product.image_hue,
     galleryHues: parseGallery(product.gallery_hues, product.image_hue),
@@ -180,7 +197,7 @@ function autocomplete(q, limit = 8) {
 }
 
 function getProductBySlug(slug) {
-  return db.prepare(`${PRODUCT_SELECT} WHERE p.slug = ?`).get(slug);
+  return db.prepare(`${PRODUCT_SELECT_FULL} WHERE p.slug = ?`).get(slug);
 }
 
 function related(productId, categoryId, limit = 4) {
@@ -251,7 +268,12 @@ function getPriceBounds() {
 function getCombos() {
   return db.prepare('SELECT * FROM combos WHERE is_active = 1 ORDER BY id').all().map((c) => {
     const items = db.prepare(
-      `SELECT ci.qty, p.*, c.name AS category_name, c.slug AS category_slug
+      `SELECT ci.qty, p.id, p.category_id, p.name, p.slug, p.short_description, 
+         p.mrp, p.price, p.stock, p.is_prescription, p.featured, p.rating, 
+         p.rating_count, p.image_hue, p.tags, p.brand, p.gallery_hues, p.created_at, p.updated_at,
+         CASE WHEN p.image LIKE 'data:%' THEN 'data:image' ELSE p.image END AS image,
+         c.name AS category_name, c.slug AS category_slug,
+         (SELECT COALESCE(SUM(oi.qty), 0) FROM order_items oi WHERE oi.product_id = p.id) AS sold_count
        FROM combo_items ci JOIN products p ON p.id = ci.product_id
        LEFT JOIN categories c ON c.id = p.category_id
        WHERE ci.combo_id = ?`
